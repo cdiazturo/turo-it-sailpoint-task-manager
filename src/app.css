@@ -4,15 +4,89 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: "Freight Display Pro";
+  src: url("/fonts/freight-display-pro-black.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Basis Grotesque";
+  src: url("/fonts/basis-grotesque-regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Basis Grotesque";
+  src: url("/fonts/basis-grotesque-italic.otf") format("opentype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Basis Grotesque";
+  src: url("/fonts/basis-grotesque-medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Basis Grotesque";
+  src: url("/fonts/basis-grotesque-medium-italic.otf") format("opentype");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Basis Grotesque";
+  src: url("/fonts/basis-grotesque-bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Basis Grotesque";
+  src: url("/fonts/basis-grotesque-bold-italic.otf") format("opentype");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Basis Grotesque";
+  src: url("/fonts/basis-grotesque-black.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Basis Grotesque";
+  src: url("/fonts/basis-grotesque-black-italic.otf") format("opentype");
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
 @theme {
   --font-sans:
-    "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    "Basis Grotesque", "Inter", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-display: "Freight Display Pro", serif;
 }
 
 html,
 body {
   @apply bg-white dark:bg-gray-950;
+  font-family: var(--font-sans);
 
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;

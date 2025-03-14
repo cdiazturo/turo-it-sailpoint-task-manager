@@ -9,7 +9,10 @@ import {
   ScrollRestoration,
 } from "react-router";
 
+import { Toaster } from "@/components/ui/sonner";
+
 import type { Route } from "./+types/root";
+import { MainNav } from "./components/nav";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -33,8 +36,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
-        {children}
+      <body className="antialiased">
+        <div className="min-h-screen bg-background">
+          <MainNav />
+          <main className="container max-w-screen-2xl mx-auto px-8 pt-32 pb-16">
+            {children}
+          </main>
+        </div>
+        <Toaster />
         <ScrollRestoration />
         <Scripts />
       </body>
