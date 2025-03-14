@@ -37,32 +37,32 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { cn, getContainerRadius } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 const getStatusIcon = (status: string | null | undefined) => {
-  if (!status) return <Loader2 className="h-4 w-4 animate-spin" />;
+  if (!status) return <Loader2 className="text-primary h-4 w-4 animate-spin" />;
 
   switch (status.toLowerCase()) {
     case "success": {
-      return <CheckCircle2 className="text-interactive-success h-4 w-4" />;
+      return <CheckCircle2 className="text-icon-success h-4 w-4" />;
     }
     case "pending":
     case "in progress": {
-      return <Loader2 className="text-interactive-02 h-4 w-4 animate-spin" />;
+      return <Loader2 className="text-icon-info h-4 w-4 animate-spin" />;
     }
     case "error":
     case "failed": {
-      return <XCircle className="text-interactive-destructive h-4 w-4" />;
+      return <XCircle className="text-icon-error h-4 w-4" />;
     }
     case "cancelled":
     case "terminated": {
-      return <X className="text-text-02 h-4 w-4" />;
+      return <X className="text-icon-info h-4 w-4" />;
     }
     case "warning": {
-      return <Info className="text-interactive-02 h-4 w-4" />;
+      return <Info className="text-icon-warning h-4 w-4" />;
     }
     default: {
-      return <Info className="text-primary h-4 w-4" />;
+      return <Info className="text-icon-info h-4 w-4" />;
     }
   }
 };
@@ -186,7 +186,7 @@ export function TaskList({
     if (loading) {
       return (
         <div className="flex items-center justify-center py-8">
-          <Loader2 className="h-8 w-8 animate-spin" />
+          <Loader2 className="text-primary h-8 w-8 animate-spin" />
         </div>
       );
     }
@@ -204,29 +204,50 @@ export function TaskList({
         {tasks.map((task) => {
           const taskResults = summarizeTaskResults(task);
           const duration = calculateDuration(task.launched, task.completed);
+
+          // Get status-specific styling
+          const isSuccess = task.completionStatus?.toLowerCase() === "success";
+          const isError =
+            task.completionStatus?.toLowerCase() === "error" ||
+            task.completionStatus?.toLowerCase() === "failed";
+          const isInProgress = !task.completionStatus;
+          const isWarning = task.completionStatus?.toLowerCase() === "warning";
+
           return (
             <Card
               key={task.id}
               className={cn(
-                `hover:elevation-1 transition-all ${getContainerRadius("sm")}`,
-                task.completionStatus?.toLowerCase() === "success" &&
-                  "border-surface-success",
-                task.completionStatus?.toLowerCase() === "failed" &&
-                  "border-surface-error",
-                !task.completionStatus && "border-surface-02",
+                "bg-sidebar border-l-4 transition-all hover:shadow-md",
+                isSuccess && "border-l-surface-success",
+                isError && "border-l-surface-error",
+                isWarning && "border-l-surface-warning",
+                isInProgress && "border-l-primary",
               )}
             >
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between">
                   <div className="flex flex-col">
-                    <div className="flex items-center space-x-2">
-                      <Badge variant="outline" className="text-xs font-medium">
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        variant="outline"
+                        className="bg-sidebar-accent text-sidebar-accent-foreground border-sidebar-border px-2 py-0.5 text-xs font-medium"
+                      >
                         {task.type}
                       </Badge>
-                      {getStatusIcon(task.completionStatus)}
-                      <span className="text-sm font-medium">
-                        {task.completionStatus || "In Progress"}
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        {getStatusIcon(task.completionStatus)}
+                        <span
+                          className={cn(
+                            "text-sm font-medium",
+                            isSuccess && "text-text-success",
+                            isError && "text-text-error",
+                            isWarning && "text-text-warning",
+                            isInProgress && "text-text-info",
+                          )}
+                        >
+                          {task.completionStatus || "IN PROGRESS"}
+                        </span>
+                      </div>
                       {task.percentComplete != undefined && (
                         <span className="text-muted-foreground text-xs">
                           (
@@ -238,17 +259,17 @@ export function TaskList({
                         </span>
                       )}
                     </div>
-                    <h3 className="mt-1 line-clamp-1 text-base font-medium">
+                    <h3 className="text-sidebar-foreground mt-1.5 line-clamp-1 text-base font-medium">
                       {task.description || task.uniqueName || task.id}
                     </h3>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center gap-2">
                     {onViewDetails && (
                       <Button
                         variant="ghost"
                         size="sm"
                         asChild
-                        className={getContainerRadius("xs")}
+                        className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-md"
                       >
                         <Link to={`/tasks/${task.id}`}>View Details</Link>
                       </Button>
@@ -257,7 +278,7 @@ export function TaskList({
                       variant="ghost"
                       size="sm"
                       onClick={() => toggleTaskExpanded(task.id)}
-                      className={getContainerRadius("xs")}
+                      className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-md"
                     >
                       {expandedTasks[task.id] ? (
                         <ChevronUp className="h-4 w-4" />
@@ -278,42 +299,50 @@ export function TaskList({
                           task.percentComplete,
                           task.completionStatus,
                         )}
+                        className={cn(
+                          "bg-sidebar-accent h-1.5",
+                          isSuccess && "[&>div]:bg-text-success",
+                          isError && "[&>div]:bg-text-error",
+                          isWarning && "[&>div]:bg-text-warning",
+                          isInProgress && "[&>div]:bg-primary",
+                        )}
                       />
                     </div>
                   )}
 
                   {/* Error Alert */}
-                  {(task.completionStatus?.toLowerCase() === "error" ||
-                    task.completionStatus?.toLowerCase() === "failed") &&
-                    task.messages &&
-                    task.messages.length > 0 && (
-                      <Alert
-                        variant="destructive"
-                        className={getContainerRadius("sm")}
-                      >
-                        <XCircle className="h-4 w-4" />
-                        <AlertTitle>Error</AlertTitle>
-                        <AlertDescription>
-                          {task.messages.map((message, index) => (
-                            <p key={index}>
-                              {String(message.localizedText?.message)}
-                            </p>
-                          ))}
-                        </AlertDescription>
-                      </Alert>
-                    )}
+                  {isError && task.messages && task.messages.length > 0 && (
+                    <Alert
+                      variant="destructive"
+                      className="border-destructive bg-sidebar-accent rounded-md"
+                    >
+                      <XCircle className="text-destructive h-4 w-4" />
+                      <AlertTitle className="text-destructive font-medium">
+                        Error
+                      </AlertTitle>
+                      <AlertDescription className="text-sidebar-accent-foreground">
+                        {task.messages.map((message, index) => (
+                          <p key={index}>
+                            {String(message.localizedText?.message)}
+                          </p>
+                        ))}
+                      </AlertDescription>
+                    </Alert>
+                  )}
 
                   {/* Task key information - always visible */}
-                  <div className="grid grid-cols-2 gap-2 text-sm md:grid-cols-4">
+                  <div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
                     <TooltipProvider>
                       {/* Target Information */}
-                      <div className="flex items-center space-x-1.5">
-                        <Database className="text-muted-foreground h-3.5 w-3.5 flex-shrink-0" />
+                      <div className="flex items-center space-x-2">
+                        <Database className="text-primary h-3.5 w-3.5 flex-shrink-0" />
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span className="truncate">
                               {task.target?.name ? (
-                                <span>{task.target.name}</span>
+                                <span className="font-medium">
+                                  {task.target.name}
+                                </span>
                               ) : (
                                 <span className="text-muted-foreground">
                                   No target
@@ -321,20 +350,22 @@ export function TaskList({
                               )}
                             </span>
                           </TooltipTrigger>
-                          <TooltipContent className={getContainerRadius("xs")}>
+                          <TooltipContent className="rounded-md">
                             {task.target?.type} - {task.target?.name || "N/A"}
                           </TooltipContent>
                         </Tooltip>
                       </div>
 
                       {/* Created Time */}
-                      <div className="flex items-center space-x-1.5">
-                        <Calendar className="text-muted-foreground h-3.5 w-3.5 flex-shrink-0" />
+                      <div className="flex items-center space-x-2">
+                        <Calendar className="text-primary h-3.5 w-3.5 flex-shrink-0" />
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <span>{formatDate(task.created)}</span>
+                            <span className="font-medium">
+                              {formatDate(task.created)}
+                            </span>
                           </TooltipTrigger>
-                          <TooltipContent className={getContainerRadius("xs")}>
+                          <TooltipContent className="rounded-md">
                             Created:{" "}
                             {new Date(task.created || "").toLocaleString()}
                           </TooltipContent>
@@ -342,13 +373,13 @@ export function TaskList({
                       </div>
 
                       {/* Duration */}
-                      <div className="flex items-center space-x-1.5">
-                        <Clock className="text-muted-foreground h-3.5 w-3.5 flex-shrink-0" />
+                      <div className="flex items-center space-x-2">
+                        <Clock className="text-primary h-3.5 w-3.5 flex-shrink-0" />
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <span>{duration}</span>
+                            <span className="font-medium">{duration}</span>
                           </TooltipTrigger>
-                          <TooltipContent className={getContainerRadius("xs")}>
+                          <TooltipContent className="rounded-md">
                             {task.launched && (
                               <div>
                                 Started:{" "}
@@ -366,22 +397,24 @@ export function TaskList({
                       </div>
 
                       {/* Initiator */}
-                      <div className="flex items-center space-x-1.5">
-                        <User className="text-muted-foreground h-3.5 w-3.5 flex-shrink-0" />
-                        <span>{task.launcher || "System"}</span>
+                      <div className="flex items-center space-x-2">
+                        <User className="text-primary h-3.5 w-3.5 flex-shrink-0" />
+                        <span className="font-medium">
+                          {task.launcher || "System"}
+                        </span>
                       </div>
                     </TooltipProvider>
                   </div>
 
                   {/* Task metrics - shown if available */}
                   {taskResults && taskResults.length > 0 && (
-                    <div className="grid grid-cols-2 gap-2 border-t pt-2 md:grid-cols-5">
+                    <div className="bg-sidebar-accent grid grid-cols-2 gap-3 rounded-md p-3 md:grid-cols-5">
                       {taskResults.map((result, index) => (
                         <div key={index} className="text-center">
                           <div className="text-muted-foreground text-xs">
                             {result.label}
                           </div>
-                          <div className="text-sm font-medium">
+                          <div className="text-sidebar-foreground text-sm font-medium">
                             {result.value}
                           </div>
                         </div>
@@ -391,23 +424,31 @@ export function TaskList({
 
                   {/* Expanded details */}
                   {expandedTasks[task.id] && (
-                    <div className="mt-4 space-y-3 border-t pt-3 text-sm">
+                    <div className="border-sidebar-border mt-4 space-y-4 border-t pt-4 text-sm">
                       {/* Task Definition */}
                       {task.taskDefinitionSummary && (
-                        <div className="space-y-1">
-                          <div className="flex items-center font-medium">
-                            <FileText className="text-muted-foreground mr-1 h-4 w-4" />
+                        <div className="space-y-2">
+                          <div className="text-sidebar-foreground flex items-center font-medium">
+                            <FileText className="text-primary mr-2 h-4 w-4" />
                             Task Definition
                           </div>
-                          <div className="pl-5 text-sm">
-                            <span className="text-muted-foreground">Name:</span>{" "}
-                            {task.taskDefinitionSummary.uniqueName}
+                          <div className="space-y-1 pl-6 text-sm">
+                            <div>
+                              <span className="text-muted-foreground">
+                                Name:
+                              </span>{" "}
+                              <span className="font-medium">
+                                {task.taskDefinitionSummary.uniqueName}
+                              </span>
+                            </div>
                             {task.taskDefinitionSummary.description && (
                               <div>
                                 <span className="text-muted-foreground">
                                   Description:
                                 </span>{" "}
-                                {task.taskDefinitionSummary.description}
+                                <span className="font-medium">
+                                  {task.taskDefinitionSummary.description}
+                                </span>
                               </div>
                             )}
                             {task.taskDefinitionSummary.executor && (
@@ -415,7 +456,9 @@ export function TaskList({
                                 <span className="text-muted-foreground">
                                   Executor:
                                 </span>{" "}
-                                {task.taskDefinitionSummary.executor}
+                                <span className="font-medium">
+                                  {task.taskDefinitionSummary.executor}
+                                </span>
                               </div>
                             )}
                           </div>
@@ -424,12 +467,12 @@ export function TaskList({
 
                       {/* Task Return Values */}
                       {task.returns && task.returns.length > 0 && (
-                        <div className="space-y-1">
-                          <div className="flex items-center font-medium">
-                            <Server className="text-muted-foreground mr-1 h-4 w-4" />
+                        <div className="space-y-2">
+                          <div className="text-sidebar-foreground flex items-center font-medium">
+                            <Server className="text-primary mr-2 h-4 w-4" />
                             Return Values
                           </div>
-                          <div className="grid grid-cols-1 gap-1 pl-5 md:grid-cols-2">
+                          <div className="bg-sidebar-accent grid grid-cols-1 gap-2 rounded-md p-3 md:grid-cols-2">
                             {task.returns
                               .slice(0, 8)
                               .map((returnValue, index) => (
@@ -437,7 +480,7 @@ export function TaskList({
                                   <span className="text-muted-foreground">
                                     {returnValue.attributeName}:{" "}
                                   </span>
-                                  <span>
+                                  <span className="font-medium">
                                     {task.attributes?.[
                                       returnValue.attributeName
                                     ] || "N/A"}
@@ -455,11 +498,16 @@ export function TaskList({
 
                       {/* Messages */}
                       {task.messages && task.messages.length > 0 && (
-                        <div className="space-y-1">
-                          <div className="font-medium">Messages:</div>
-                          <ul className="list-inside list-disc space-y-1 pl-2">
+                        <div className="space-y-2">
+                          <div className="text-sidebar-foreground font-medium">
+                            Messages:
+                          </div>
+                          <ul className="bg-sidebar-accent list-inside list-disc space-y-1 rounded-md p-3 pl-2">
                             {task.messages.map((message, index) => (
-                              <li key={index}>
+                              <li
+                                key={index}
+                                className="text-sidebar-foreground"
+                              >
                                 {String(message.localizedText?.message)}
                               </li>
                             ))}
@@ -483,16 +531,22 @@ export function TaskList({
                   onClick={() =>
                     currentPage > 1 && onPageChange(currentPage - 1)
                   }
-                  className={
-                    currentPage <= 1 ? "pointer-events-none opacity-50" : ""
-                  }
+                  className={cn(
+                    "border-sidebar-border bg-sidebar-accent border",
+                    currentPage <= 1
+                      ? "pointer-events-none opacity-50"
+                      : "hover:bg-sidebar-accent/80",
+                  )}
                 />
               </PaginationItem>
 
               {/* First page */}
               {currentPage > 2 && (
                 <PaginationItem>
-                  <PaginationLink onClick={() => onPageChange(1)}>
+                  <PaginationLink
+                    onClick={() => onPageChange(1)}
+                    className="border-sidebar-border bg-sidebar-accent hover:bg-sidebar-accent/80 border"
+                  >
                     1
                   </PaginationLink>
                 </PaginationItem>
@@ -501,14 +555,19 @@ export function TaskList({
               {/* Ellipsis */}
               {currentPage > 3 && (
                 <PaginationItem>
-                  <PaginationLink>...</PaginationLink>
+                  <PaginationLink className="border-sidebar-border bg-sidebar-accent border">
+                    ...
+                  </PaginationLink>
                 </PaginationItem>
               )}
 
               {/* Previous page */}
               {currentPage > 1 && (
                 <PaginationItem>
-                  <PaginationLink onClick={() => onPageChange(currentPage - 1)}>
+                  <PaginationLink
+                    onClick={() => onPageChange(currentPage - 1)}
+                    className="border-sidebar-border bg-sidebar-accent hover:bg-sidebar-accent/80 border"
+                  >
                     {currentPage - 1}
                   </PaginationLink>
                 </PaginationItem>
@@ -516,13 +575,21 @@ export function TaskList({
 
               {/* Current page */}
               <PaginationItem>
-                <PaginationLink isActive>{currentPage}</PaginationLink>
+                <PaginationLink
+                  isActive
+                  className="bg-primary text-primary-foreground border-primary"
+                >
+                  {currentPage}
+                </PaginationLink>
               </PaginationItem>
 
               {/* Next page */}
               {currentPage < totalPages && (
                 <PaginationItem>
-                  <PaginationLink onClick={() => onPageChange(currentPage + 1)}>
+                  <PaginationLink
+                    onClick={() => onPageChange(currentPage + 1)}
+                    className="border-sidebar-border bg-sidebar-accent hover:bg-sidebar-accent/80 border"
+                  >
                     {currentPage + 1}
                   </PaginationLink>
                 </PaginationItem>
@@ -531,14 +598,19 @@ export function TaskList({
               {/* Ellipsis */}
               {currentPage < totalPages - 2 && (
                 <PaginationItem>
-                  <PaginationLink>...</PaginationLink>
+                  <PaginationLink className="border-sidebar-border bg-sidebar-accent border">
+                    ...
+                  </PaginationLink>
                 </PaginationItem>
               )}
 
               {/* Last page */}
               {currentPage < totalPages - 1 && (
                 <PaginationItem>
-                  <PaginationLink onClick={() => onPageChange(totalPages)}>
+                  <PaginationLink
+                    onClick={() => onPageChange(totalPages)}
+                    className="border-sidebar-border bg-sidebar-accent hover:bg-sidebar-accent/80 border"
+                  >
                     {totalPages}
                   </PaginationLink>
                 </PaginationItem>
@@ -549,11 +621,12 @@ export function TaskList({
                   onClick={() =>
                     currentPage < totalPages && onPageChange(currentPage + 1)
                   }
-                  className={
+                  className={cn(
+                    "border-sidebar-border bg-sidebar-accent border",
                     currentPage >= totalPages
                       ? "pointer-events-none opacity-50"
-                      : ""
-                  }
+                      : "hover:bg-sidebar-accent/80",
+                  )}
                 />
               </PaginationItem>
             </PaginationContent>

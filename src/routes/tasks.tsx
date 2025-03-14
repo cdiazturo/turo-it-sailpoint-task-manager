@@ -97,7 +97,7 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
       <div className="flex items-center justify-between">
         <h1 className="font-display text-foreground text-3xl">Tasks</h1>
         <Button
-          variant="outline"
+          variant="turo"
           size="sm"
           onClick={handleRefresh}
           disabled={isLoading}
