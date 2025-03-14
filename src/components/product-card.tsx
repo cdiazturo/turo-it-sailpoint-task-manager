@@ -26,14 +26,14 @@ export function ProductCard({ product }: { product: ProductBeta }) {
       className={`elevation-1 hover:elevation-2 transition-shadow ${getContainerRadius("sm")}`}
     >
       <CardHeader>
-        <div className="flex justify-between items-start mb-2">
+        <div className="mb-2 flex items-start justify-between">
           <div className="flex items-center">
             <Badge
-              className={`mr-2 bg-interactive text-interactive-contrast-secondary ${getContainerRadius("xs")}`}
+              className={`bg-interactive text-interactive-contrast-secondary mr-2 ${getContainerRadius("xs")}`}
             >
               {product.productName?.toUpperCase()}
             </Badge>
-            <span className="text-sm text-text-secondary capitalize">
+            <span className="text-text-secondary text-sm capitalize">
               {product.status}
             </span>
           </div>
@@ -60,42 +60,42 @@ export function ProductCard({ product }: { product: ProductBeta }) {
       </CardHeader>
 
       <CardContent>
-        <div className="text-sm space-y-2">
+        <div className="space-y-2 text-sm">
           {product.dateCreated && (
-            <div className="flex items-center text-text-secondary">
-              <CalendarDays className="h-3 w-3 mr-1" />
+            <div className="text-text-secondary flex items-center">
+              <CalendarDays className="mr-1 h-3 w-3" />
               Created: {new Date(product.dateCreated).toLocaleDateString()}
             </div>
           )}
 
           {product.apiUrl && (
-            <div className="flex items-center text-text-secondary">
-              <Cloud className="h-3 w-3 mr-1" />
+            <div className="text-text-secondary flex items-center">
+              <Cloud className="mr-1 h-3 w-3" />
               API: {product.apiUrl.replace(/^https?:\/\//, "")}
             </div>
           )}
 
           {product.zone && (
-            <div className="flex items-center text-text-secondary">
-              <Database className="h-3 w-3 mr-1" />
+            <div className="text-text-secondary flex items-center">
+              <Database className="mr-1 h-3 w-3" />
               Zone: {product.zone}
             </div>
           )}
 
           {licenseCount > 0 && (
             <div className="mt-3">
-              <div className="flex items-center mb-1">
-                <Shield className="h-3 w-3 mr-1 text-interactive" />
-                <span className="text-xs text-text-secondary">
+              <div className="mb-1 flex items-center">
+                <Shield className="text-interactive mr-1 h-3 w-3" />
+                <span className="text-text-secondary text-xs">
                   Licenses ({licenseCount})
                 </span>
               </div>
-              <div className="flex flex-wrap gap-1 mt-1">
+              <div className="mt-1 flex flex-wrap gap-1">
                 {product.licenses?.slice(0, 3).map((license) => (
                   <TooltipProvider key={license.licenseId}>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <span className="inline-flex items-center text-xs bg-surface-secondary rounded-full px-2 py-0.5">
+                        <span className="bg-surface-secondary inline-flex items-center rounded-full px-2 py-0.5 text-xs">
                           {license.licenseId?.split(":")[1]}
                         </span>
                       </TooltipTrigger>
@@ -109,16 +109,16 @@ export function ProductCard({ product }: { product: ProductBeta }) {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <span className="inline-flex items-center text-xs bg-surface-secondary rounded-full px-2 py-0.5">
+                        <span className="bg-surface-secondary inline-flex items-center rounded-full px-2 py-0.5 text-xs">
                           +{licenseCount - 3} more
                         </span>
                       </TooltipTrigger>
                       <TooltipContent className={getContainerRadius("xs")}>
                         <div className="max-w-xs">
-                          <p className="font-medium mb-1">
+                          <p className="mb-1 font-medium">
                             Additional licenses:
                           </p>
-                          <ul className="text-xs space-y-1">
+                          <ul className="space-y-1 text-xs">
                             {product.licenses?.slice(3).map((license) => (
                               <li key={license.licenseId}>
                                 {license.licenseId?.split(":")[1]}{" "}

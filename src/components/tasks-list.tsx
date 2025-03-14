@@ -44,25 +44,25 @@ const getStatusIcon = (status: string | null | undefined) => {
 
   switch (status.toLowerCase()) {
     case "success": {
-      return <CheckCircle2 className="h-4 w-4 text-interactive-success" />;
+      return <CheckCircle2 className="text-interactive-success h-4 w-4" />;
     }
     case "pending":
     case "in progress": {
-      return <Loader2 className="h-4 w-4 animate-spin text-interactive-02" />;
+      return <Loader2 className="text-interactive-02 h-4 w-4 animate-spin" />;
     }
     case "error":
     case "failed": {
-      return <XCircle className="h-4 w-4 text-interactive-destructive" />;
+      return <XCircle className="text-interactive-destructive h-4 w-4" />;
     }
     case "cancelled":
     case "terminated": {
-      return <X className="h-4 w-4 text-text-02" />;
+      return <X className="text-text-02 h-4 w-4" />;
     }
     case "warning": {
-      return <Info className="h-4 w-4 text-interactive-02" />;
+      return <Info className="text-interactive-02 h-4 w-4" />;
     }
     default: {
-      return <Info className="h-4 w-4 text-primary" />;
+      return <Info className="text-primary h-4 w-4" />;
     }
   }
 };
@@ -185,7 +185,7 @@ export function TaskList({
   const renderContent = () => {
     if (loading) {
       return (
-        <div className="flex justify-center items-center py-8">
+        <div className="flex items-center justify-center py-8">
           <Loader2 className="h-8 w-8 animate-spin" />
         </div>
       );
@@ -193,7 +193,7 @@ export function TaskList({
 
     if (tasks.length === 0) {
       return (
-        <div className="text-center py-8 text-muted-foreground">
+        <div className="text-muted-foreground py-8 text-center">
           No tasks found
         </div>
       );
@@ -208,7 +208,7 @@ export function TaskList({
             <Card
               key={task.id}
               className={cn(
-                `transition-all hover:elevation-1 ${getContainerRadius("sm")}`,
+                `hover:elevation-1 transition-all ${getContainerRadius("sm")}`,
                 task.completionStatus?.toLowerCase() === "success" &&
                   "border-surface-success",
                 task.completionStatus?.toLowerCase() === "failed" &&
@@ -217,7 +217,7 @@ export function TaskList({
               )}
             >
               <CardHeader className="pb-2">
-                <div className="flex justify-between items-start">
+                <div className="flex items-start justify-between">
                   <div className="flex flex-col">
                     <div className="flex items-center space-x-2">
                       <Badge variant="outline" className="text-xs font-medium">
@@ -228,7 +228,7 @@ export function TaskList({
                         {task.completionStatus || "In Progress"}
                       </span>
                       {task.percentComplete != undefined && (
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-muted-foreground text-xs">
                           (
                           {adjustPercentComplete(
                             task.percentComplete,
@@ -238,7 +238,7 @@ export function TaskList({
                         </span>
                       )}
                     </div>
-                    <h3 className="text-base font-medium mt-1 line-clamp-1">
+                    <h3 className="mt-1 line-clamp-1 text-base font-medium">
                       {task.description || task.uniqueName || task.id}
                     </h3>
                   </div>
@@ -304,11 +304,11 @@ export function TaskList({
                     )}
 
                   {/* Task key information - always visible */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+                  <div className="grid grid-cols-2 gap-2 text-sm md:grid-cols-4">
                     <TooltipProvider>
                       {/* Target Information */}
                       <div className="flex items-center space-x-1.5">
-                        <Database className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                        <Database className="text-muted-foreground h-3.5 w-3.5 flex-shrink-0" />
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span className="truncate">
@@ -329,7 +329,7 @@ export function TaskList({
 
                       {/* Created Time */}
                       <div className="flex items-center space-x-1.5">
-                        <Calendar className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                        <Calendar className="text-muted-foreground h-3.5 w-3.5 flex-shrink-0" />
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span>{formatDate(task.created)}</span>
@@ -343,7 +343,7 @@ export function TaskList({
 
                       {/* Duration */}
                       <div className="flex items-center space-x-1.5">
-                        <Clock className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                        <Clock className="text-muted-foreground h-3.5 w-3.5 flex-shrink-0" />
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span>{duration}</span>
@@ -367,7 +367,7 @@ export function TaskList({
 
                       {/* Initiator */}
                       <div className="flex items-center space-x-1.5">
-                        <User className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                        <User className="text-muted-foreground h-3.5 w-3.5 flex-shrink-0" />
                         <span>{task.launcher || "System"}</span>
                       </div>
                     </TooltipProvider>
@@ -375,10 +375,10 @@ export function TaskList({
 
                   {/* Task metrics - shown if available */}
                   {taskResults && taskResults.length > 0 && (
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-2 pt-2 border-t">
+                    <div className="grid grid-cols-2 gap-2 border-t pt-2 md:grid-cols-5">
                       {taskResults.map((result, index) => (
                         <div key={index} className="text-center">
-                          <div className="text-xs text-muted-foreground">
+                          <div className="text-muted-foreground text-xs">
                             {result.label}
                           </div>
                           <div className="text-sm font-medium">
@@ -391,12 +391,12 @@ export function TaskList({
 
                   {/* Expanded details */}
                   {expandedTasks[task.id] && (
-                    <div className="mt-4 pt-3 border-t text-sm space-y-3">
+                    <div className="mt-4 space-y-3 border-t pt-3 text-sm">
                       {/* Task Definition */}
                       {task.taskDefinitionSummary && (
                         <div className="space-y-1">
-                          <div className="font-medium flex items-center">
-                            <FileText className="h-4 w-4 mr-1 text-muted-foreground" />
+                          <div className="flex items-center font-medium">
+                            <FileText className="text-muted-foreground mr-1 h-4 w-4" />
                             Task Definition
                           </div>
                           <div className="pl-5 text-sm">
@@ -425,11 +425,11 @@ export function TaskList({
                       {/* Task Return Values */}
                       {task.returns && task.returns.length > 0 && (
                         <div className="space-y-1">
-                          <div className="font-medium flex items-center">
-                            <Server className="h-4 w-4 mr-1 text-muted-foreground" />
+                          <div className="flex items-center font-medium">
+                            <Server className="text-muted-foreground mr-1 h-4 w-4" />
                             Return Values
                           </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-1 pl-5">
+                          <div className="grid grid-cols-1 gap-1 pl-5 md:grid-cols-2">
                             {task.returns
                               .slice(0, 8)
                               .map((returnValue, index) => (
@@ -445,7 +445,7 @@ export function TaskList({
                                 </div>
                               ))}
                             {task.returns.length > 8 && (
-                              <div className="text-sm text-muted-foreground">
+                              <div className="text-muted-foreground text-sm">
                                 And {task.returns.length - 8} more...
                               </div>
                             )}
@@ -457,7 +457,7 @@ export function TaskList({
                       {task.messages && task.messages.length > 0 && (
                         <div className="space-y-1">
                           <div className="font-medium">Messages:</div>
-                          <ul className="list-disc list-inside pl-2 space-y-1">
+                          <ul className="list-inside list-disc space-y-1 pl-2">
                             {task.messages.map((message, index) => (
                               <li key={index}>
                                 {String(message.localizedText?.message)}

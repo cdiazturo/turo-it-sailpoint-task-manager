@@ -20,19 +20,19 @@ export function TenantInfo({ tenantInfo }: { tenantInfo: TenantBeta }) {
     idnProduct?.orgType || tenantInfo.products?.[0]?.orgType || "Unknown";
   return (
     <Card
-      className={`mb-8 overflow-hidden elevation-1 ${getContainerRadius("md")}`}
+      className={`elevation-1 mb-8 overflow-hidden ${getContainerRadius("md")}`}
     >
-      <div className="absolute top-0 right-0 w-32 h-32 bg-surface-02 opacity-20 rounded-bl-full"></div>
+      <div className="bg-surface-02 absolute top-0 right-0 h-32 w-32 rounded-bl-full opacity-20"></div>
 
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-4xl font-display mb-2">
+            <CardTitle className="font-display mb-2 text-4xl">
               {tenantInfo.fullName}
             </CardTitle>
             <CardDescription className="text-lg">
               Tenant:{" "}
-              <span className="font-medium text-foreground">
+              <span className="text-foreground font-medium">
                 {tenantInfo.name}
               </span>
               {orgType && (
@@ -47,7 +47,7 @@ export function TenantInfo({ tenantInfo }: { tenantInfo: TenantBeta }) {
           </div>
           <Badge
             variant="outline"
-            className={`text-sm px-3 py-1 bg-surface-02 bg-opacity-10 ${getContainerRadius("xs")}`}
+            className={`bg-surface-02 bg-opacity-10 px-3 py-1 text-sm ${getContainerRadius("xs")}`}
           >
             {tenantInfo.region}
           </Badge>
@@ -55,35 +55,35 @@ export function TenantInfo({ tenantInfo }: { tenantInfo: TenantBeta }) {
       </CardHeader>
 
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           <div>
-            <h3 className="text-lg font-medium mb-4 flex items-center">
-              <Server className="mr-2 h-5 w-5 text-primary" />
+            <h3 className="mb-4 flex items-center text-lg font-medium">
+              <Server className="text-primary mr-2 h-5 w-5" />
               Tenant Information
             </h3>
             <div className="space-y-3">
-              <div className="flex justify-between border-b border-border pb-2">
+              <div className="border-border flex justify-between border-b pb-2">
                 <span className="text-text-02">ID</span>
-                <span className="font-medium text-foreground">
+                <span className="text-foreground font-medium">
                   {tenantInfo.id}
                 </span>
               </div>
-              <div className="flex justify-between border-b border-border pb-2">
+              <div className="border-border flex justify-between border-b pb-2">
                 <span className="text-text-02">Pod</span>
-                <span className="font-medium text-foreground">
+                <span className="text-foreground font-medium">
                   {tenantInfo.pod}
                 </span>
               </div>
-              <div className="flex justify-between border-b border-border pb-2">
+              <div className="border-border flex justify-between border-b pb-2">
                 <span className="text-text-02">Region</span>
-                <span className="font-medium text-foreground">
+                <span className="text-foreground font-medium">
                   {tenantInfo.region}
                 </span>
               </div>
               {idnProduct?.attributes?.maxRegisteredUsers && (
-                <div className="flex justify-between border-b border-border pb-2">
+                <div className="border-border flex justify-between border-b pb-2">
                   <span className="text-text-02">Max Users</span>
-                  <span className="font-medium text-foreground">
+                  <span className="text-foreground font-medium">
                     {Number(
                       idnProduct.attributes.maxRegisteredUsers,
                     ).toLocaleString()}
@@ -91,16 +91,16 @@ export function TenantInfo({ tenantInfo }: { tenantInfo: TenantBeta }) {
                 </div>
               )}
               {idnProduct?.attributes?.domain && (
-                <div className="flex justify-between border-b border-border pb-2">
+                <div className="border-border flex justify-between border-b pb-2">
                   <span className="text-text-02">Domain</span>
-                  <span className="font-medium text-foreground">
+                  <span className="text-foreground font-medium">
                     {idnProduct.attributes.domain}
                   </span>
                 </div>
               )}
-              <div className="flex justify-between border-b border-border pb-2">
+              <div className="border-border flex justify-between border-b pb-2">
                 <span className="text-text-02">Products</span>
-                <span className="font-medium text-foreground">
+                <span className="text-foreground font-medium">
                   {tenantInfo.products?.length}
                 </span>
               </div>
@@ -108,8 +108,8 @@ export function TenantInfo({ tenantInfo }: { tenantInfo: TenantBeta }) {
           </div>
 
           <div>
-            <h3 className="text-lg font-medium mb-4 flex items-center">
-              <Package className="mr-2 h-5 w-5 text-primary" />
+            <h3 className="mb-4 flex items-center text-lg font-medium">
+              <Package className="text-primary mr-2 h-5 w-5" />
               Products
             </h3>
             <div className="space-y-4">

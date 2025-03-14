@@ -36,8 +36,8 @@ export async function loader({
 export default function Home({ loaderData }: Route.ComponentProps) {
   const tenant = loaderData.data;
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <h1 className="text-3xl font-display text-foreground mb-6">
+    <div className="container mx-auto space-y-6 py-6">
+      <h1 className="font-display text-foreground mb-6 text-3xl">
         SailPoint Task Manager
       </h1>
       <div className="space-y-4">

@@ -1,5 +1,3 @@
-"use client";
-
 import { LogOut, Menu, Settings } from "lucide-react";
 import * as React from "react";
 import { NavLink } from "react-router";
@@ -29,8 +27,8 @@ export function MainNav() {
   ];
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border elevation-1">
-      <div className="flex h-20 items-center px-8 container max-w-screen-2xl mx-auto">
+    <div className="bg-background border-border elevation-1 fixed top-0 right-0 left-0 z-50 border-b">
+      <div className="container mx-auto flex h-20 max-w-screen-2xl items-center px-8">
         <div className="flex items-center space-x-12">
           <NavLink to="/" className="flex items-center">
             <TuroLogo
@@ -40,16 +38,16 @@ export function MainNav() {
               color="currentColor"
             />
           </NavLink>
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden items-center space-x-8 md:flex">
             {routes.map((route) => (
               <NavLink
                 key={route.href}
                 to={route.href}
                 className={({ isActive }) =>
                   cn(
-                    "text-sm font-medium transition-colors hover:text-primary relative py-2",
+                    "hover:text-primary relative py-2 text-sm font-medium transition-colors",
                     isActive
-                      ? "text-primary after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary"
+                      ? "text-primary after:bg-primary after:absolute after:right-0 after:bottom-0 after:left-0 after:h-0.5"
                       : "text-muted-foreground",
                   )
                 }
@@ -101,7 +99,7 @@ export function MainNav() {
         </div>
       </div>
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-border p-4 bg-background">
+        <div className="border-border bg-background border-t p-4 md:hidden">
           <nav className="flex flex-col space-y-4">
             {routes.map((route) => (
               <NavLink
@@ -109,7 +107,7 @@ export function MainNav() {
                 to={route.href}
                 className={({ isActive }) =>
                   cn(
-                    "text-sm font-medium transition-colors hover:text-primary",
+                    "hover:text-primary text-sm font-medium transition-colors",
                     isActive ? "text-primary" : "text-muted-foreground",
                   )
                 }
