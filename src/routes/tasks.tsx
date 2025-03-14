@@ -95,7 +95,7 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-display text-text-01">Tasks</h1>
+        <h1 className="text-3xl font-display text-foreground">Tasks</h1>
         <Button
           variant="outline"
           size="sm"
@@ -112,7 +112,7 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
 
       <Card className={`elevation-1 ${getContainerRadius("sm")}`}>
         <CardHeader>
-          <CardTitle className="text-text-01">Task Filters</CardTitle>
+          <CardTitle className="text-foreground">Task Filters</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

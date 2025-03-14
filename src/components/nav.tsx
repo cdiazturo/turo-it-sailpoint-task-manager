@@ -29,7 +29,7 @@ export function MainNav() {
   ];
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 bg-surface-01 border-b border-stroke-01 elevation-1">
+    <div className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border elevation-1">
       <div className="flex h-20 items-center px-8 container max-w-screen-2xl mx-auto">
         <div className="flex items-center space-x-12">
           <NavLink to="/" className="flex items-center">
@@ -47,10 +47,10 @@ export function MainNav() {
                 to={route.href}
                 className={({ isActive }) =>
                   cn(
-                    "text-sm font-medium transition-colors hover:text-interactive-01 relative py-2",
+                    "text-sm font-medium transition-colors hover:text-primary relative py-2",
                     isActive
-                      ? "text-interactive-01 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-interactive-01"
-                      : "text-text-02",
+                      ? "text-primary after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary"
+                      : "text-muted-foreground",
                   )
                 }
               >
@@ -101,7 +101,7 @@ export function MainNav() {
         </div>
       </div>
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-stroke-01 p-4 bg-surface-01">
+        <div className="md:hidden border-t border-border p-4 bg-background">
           <nav className="flex flex-col space-y-4">
             {routes.map((route) => (
               <NavLink
@@ -109,8 +109,8 @@ export function MainNav() {
                 to={route.href}
                 className={({ isActive }) =>
                   cn(
-                    "text-sm font-medium transition-colors hover:text-interactive-01",
-                    isActive ? "text-interactive-01" : "text-text-02",
+                    "text-sm font-medium transition-colors hover:text-primary",
+                    isActive ? "text-primary" : "text-muted-foreground",
                   )
                 }
                 onClick={() => setIsMobileMenuOpen(false)}

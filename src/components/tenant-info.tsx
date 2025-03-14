@@ -32,7 +32,7 @@ export function TenantInfo({ tenantInfo }: { tenantInfo: TenantBeta }) {
             </CardTitle>
             <CardDescription className="text-lg">
               Tenant:{" "}
-              <span className="font-medium text-text-01">
+              <span className="font-medium text-foreground">
                 {tenantInfo.name}
               </span>
               {orgType && (
@@ -58,32 +58,32 @@ export function TenantInfo({ tenantInfo }: { tenantInfo: TenantBeta }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
             <h3 className="text-lg font-medium mb-4 flex items-center">
-              <Server className="mr-2 h-5 w-5 text-interactive-01" />
+              <Server className="mr-2 h-5 w-5 text-primary" />
               Tenant Information
             </h3>
             <div className="space-y-3">
-              <div className="flex justify-between border-b border-stroke-01 pb-2">
+              <div className="flex justify-between border-b border-border pb-2">
                 <span className="text-text-02">ID</span>
-                <span className="font-medium text-text-01">
+                <span className="font-medium text-foreground">
                   {tenantInfo.id}
                 </span>
               </div>
-              <div className="flex justify-between border-b border-stroke-01 pb-2">
+              <div className="flex justify-between border-b border-border pb-2">
                 <span className="text-text-02">Pod</span>
-                <span className="font-medium text-text-01">
+                <span className="font-medium text-foreground">
                   {tenantInfo.pod}
                 </span>
               </div>
-              <div className="flex justify-between border-b border-stroke-01 pb-2">
+              <div className="flex justify-between border-b border-border pb-2">
                 <span className="text-text-02">Region</span>
-                <span className="font-medium text-text-01">
+                <span className="font-medium text-foreground">
                   {tenantInfo.region}
                 </span>
               </div>
               {idnProduct?.attributes?.maxRegisteredUsers && (
-                <div className="flex justify-between border-b border-stroke-01 pb-2">
+                <div className="flex justify-between border-b border-border pb-2">
                   <span className="text-text-02">Max Users</span>
-                  <span className="font-medium text-text-01">
+                  <span className="font-medium text-foreground">
                     {Number(
                       idnProduct.attributes.maxRegisteredUsers,
                     ).toLocaleString()}
@@ -91,16 +91,16 @@ export function TenantInfo({ tenantInfo }: { tenantInfo: TenantBeta }) {
                 </div>
               )}
               {idnProduct?.attributes?.domain && (
-                <div className="flex justify-between border-b border-stroke-01 pb-2">
+                <div className="flex justify-between border-b border-border pb-2">
                   <span className="text-text-02">Domain</span>
-                  <span className="font-medium text-text-01">
+                  <span className="font-medium text-foreground">
                     {idnProduct.attributes.domain}
                   </span>
                 </div>
               )}
-              <div className="flex justify-between border-b border-stroke-01 pb-2">
+              <div className="flex justify-between border-b border-border pb-2">
                 <span className="text-text-02">Products</span>
-                <span className="font-medium text-text-01">
+                <span className="font-medium text-foreground">
                   {tenantInfo.products?.length}
                 </span>
               </div>
@@ -109,7 +109,7 @@ export function TenantInfo({ tenantInfo }: { tenantInfo: TenantBeta }) {
 
           <div>
             <h3 className="text-lg font-medium mb-4 flex items-center">
-              <Package className="mr-2 h-5 w-5 text-interactive-01" />
+              <Package className="mr-2 h-5 w-5 text-primary" />
               Products
             </h3>
             <div className="space-y-4">

@@ -62,7 +62,7 @@ const getStatusIcon = (status: string | null | undefined) => {
       return <Info className="h-4 w-4 text-interactive-02" />;
     }
     default: {
-      return <Info className="h-4 w-4 text-interactive-01" />;
+      return <Info className="h-4 w-4 text-primary" />;
     }
   }
 };
