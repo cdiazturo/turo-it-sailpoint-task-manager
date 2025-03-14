@@ -27,9 +27,9 @@ export function MainNav() {
   ];
 
   return (
-    <div className="bg-background border-border elevation-1 fixed top-0 right-0 left-0 z-50 border-b">
-      <div className="container mx-auto flex h-20 max-w-screen-2xl items-center px-8">
-        <div className="flex items-center space-x-12">
+    <div className="border-border bg-background fixed top-0 right-0 left-0 z-50 border-b shadow-sm">
+      <div className="container mx-auto flex h-16 max-w-screen-2xl items-center px-4 md:px-8">
+        <div className="flex items-center space-x-10">
           <NavLink to="/" className="flex items-center">
             <TuroLogo
               variant="filled"
@@ -57,13 +57,12 @@ export function MainNav() {
             ))}
           </nav>
         </div>
-        <div className="ml-auto flex items-center space-x-6">
-          {/* <ThemeToggle /> */}
+        <div className="ml-auto flex items-center space-x-4">
           <Button
             variant="ghost"
             size="icon"
             asChild
-            className="hover:bg-surface-02"
+            className="hover:bg-secondary"
           >
             <NavLink to="/settings">
               <Settings className="h-5 w-5" />
@@ -72,15 +71,11 @@ export function MainNav() {
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-sm font-medium"
-              >
+              <Button variant="turo" size="sm" className="rounded-md">
                 Account
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="elevation-2">
+            <DropdownMenuContent align="end" className="rounded-md shadow-md">
               <DropdownMenuItem className="text-sm">
                 <LogOut className="mr-2 h-4 w-4" />
                 Logout

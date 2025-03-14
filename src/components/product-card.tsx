@@ -4,38 +4,33 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@radix-ui/react-tooltip";
-import {
-  Badge,
-  CalendarDays,
-  Cloud,
-  Database,
-  Globe,
-  Shield,
-} from "lucide-react";
+import { CalendarDays, Cloud, Database, Globe, Shield } from "lucide-react";
 import type { ProductBeta } from "sailpoint-api-client";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { getContainerRadius } from "@/lib/utils";
 
 export function ProductCard({ product }: { product: ProductBeta }) {
   // Get license count
   const licenseCount = product.licenses?.length || 0;
 
   return (
-    <Card
-      className={`elevation-1 hover:elevation-2 transition-shadow ${getContainerRadius("sm")}`}
-    >
-      <CardHeader>
-        <div className="mb-2 flex items-start justify-between">
+    <Card className="bg-sidebar text-sidebar-foreground border-0 transition-all duration-200 hover:shadow-md">
+      <CardHeader className="pb-0">
+        <div className="flex items-start justify-between">
           <div className="flex items-center">
-            <Badge
-              className={`bg-interactive text-interactive-contrast-secondary mr-2 ${getContainerRadius("xs")}`}
-            >
-              {product.productName?.toUpperCase()}
-            </Badge>
-            <span className="text-text-secondary text-sm capitalize">
-              {product.status}
-            </span>
+            <div className="bg-primary text-primary-foreground mr-2 flex h-8 w-8 items-center justify-center rounded-full">
+              <span className="text-xs font-bold">
+                {product.productName?.charAt(0) || "P"}
+              </span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-sidebar-foreground text-base font-medium">
+                {product.productName?.toUpperCase()}
+              </span>
+              <span className="text-muted-foreground text-xs capitalize">
+                {product.status}
+              </span>
+            </div>
           </div>
           {product.url && (
             <TooltipProvider>
@@ -45,9 +40,9 @@ export function ProductCard({ product }: { product: ProductBeta }) {
                     href={product.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-interactive hover:text-interactive-hover"
+                    className="text-sidebar-primary hover:text-primary transition-colors"
                   >
-                    <Globe className="h-4 w-4" />
+                    <Globe className="h-5 w-5" />
                   </a>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -59,84 +54,95 @@ export function ProductCard({ product }: { product: ProductBeta }) {
         </div>
       </CardHeader>
 
-      <CardContent>
-        <div className="space-y-2 text-sm">
+      <CardContent className="space-y-5">
+        <div className="space-y-2 pt-2">
           {product.dateCreated && (
-            <div className="text-text-secondary flex items-center">
-              <CalendarDays className="mr-1 h-3 w-3" />
-              Created: {new Date(product.dateCreated).toLocaleDateString()}
+            <div className="flex items-center justify-between">
+              <div className="text-muted-foreground flex items-center text-xs">
+                <CalendarDays className="mr-2 h-3.5 w-3.5" />
+                <span>Created</span>
+              </div>
+              <span className="text-sm font-medium">
+                {new Date(product.dateCreated).toLocaleDateString()}
+              </span>
             </div>
           )}
 
           {product.apiUrl && (
-            <div className="text-text-secondary flex items-center">
-              <Cloud className="mr-1 h-3 w-3" />
-              API: {product.apiUrl.replace(/^https?:\/\//, "")}
+            <div className="flex items-center justify-between">
+              <div className="text-muted-foreground flex items-center text-xs">
+                <Cloud className="mr-2 h-3.5 w-3.5" />
+                <span>API</span>
+              </div>
+              <span className="max-w-[180px] truncate text-sm font-medium">
+                {product.apiUrl.replace(/^https?:\/\//, "")}
+              </span>
             </div>
           )}
 
           {product.zone && (
-            <div className="text-text-secondary flex items-center">
-              <Database className="mr-1 h-3 w-3" />
-              Zone: {product.zone}
-            </div>
-          )}
-
-          {licenseCount > 0 && (
-            <div className="mt-3">
-              <div className="mb-1 flex items-center">
-                <Shield className="text-interactive mr-1 h-3 w-3" />
-                <span className="text-text-secondary text-xs">
-                  Licenses ({licenseCount})
-                </span>
+            <div className="flex items-center justify-between">
+              <div className="text-muted-foreground flex items-center text-xs">
+                <Database className="mr-2 h-3.5 w-3.5" />
+                <span>Zone</span>
               </div>
-              <div className="mt-1 flex flex-wrap gap-1">
-                {product.licenses?.slice(0, 3).map((license) => (
-                  <TooltipProvider key={license.licenseId}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="bg-surface-secondary inline-flex items-center rounded-full px-2 py-0.5 text-xs">
-                          {license.licenseId?.split(":")[1]}
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent className={getContainerRadius("xs")}>
-                        <p>{license.legacyFeatureName || license.licenseId}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                ))}
-                {licenseCount > 3 && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="bg-surface-secondary inline-flex items-center rounded-full px-2 py-0.5 text-xs">
-                          +{licenseCount - 3} more
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent className={getContainerRadius("xs")}>
-                        <div className="max-w-xs">
-                          <p className="mb-1 font-medium">
-                            Additional licenses:
-                          </p>
-                          <ul className="space-y-1 text-xs">
-                            {product.licenses?.slice(3).map((license) => (
-                              <li key={license.licenseId}>
-                                {license.licenseId?.split(":")[1]}{" "}
-                                {license.legacyFeatureName
-                                  ? `(${license.legacyFeatureName})`
-                                  : ""}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
-              </div>
+              <span className="text-sm font-medium">{product.zone}</span>
             </div>
           )}
         </div>
+
+        {licenseCount > 0 && (
+          <div className="border-sidebar-border border-t pt-4">
+            <div className="mb-3 flex items-center">
+              <Shield className="text-primary mr-2 h-4 w-4" />
+              <span className="text-muted-foreground text-xs font-medium">
+                Licenses ({licenseCount})
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {product.licenses?.slice(0, 3).map((license) => (
+                <TooltipProvider key={license.licenseId}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="bg-sidebar-accent text-sidebar-accent-foreground inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium">
+                        {license.licenseId?.split(":")[1]}
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent className="rounded-md">
+                      <p>{license.legacyFeatureName || license.licenseId}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ))}
+              {licenseCount > 3 && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="bg-sidebar-accent text-sidebar-accent-foreground inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium">
+                        +{licenseCount - 3} more
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent className="rounded-md">
+                      <div className="max-w-xs">
+                        <p className="mb-1 font-medium">Additional licenses:</p>
+                        <ul className="space-y-1 text-xs">
+                          {product.licenses?.slice(3).map((license) => (
+                            <li key={license.licenseId}>
+                              {license.licenseId?.split(":")[1]}{" "}
+                              {license.legacyFeatureName
+                                ? `(${license.legacyFeatureName})`
+                                : ""}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
