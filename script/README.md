@@ -9,7 +9,7 @@
 | `script/setup`     | Sets up the project for the first time after cloning or resets it to a clean state |
 | `script/bootstrap` | Installs/updates all dependencies                                                  |
 | `script/test`      | Runs the test suite                                                                |
-| `script/server`    | Starts the application server                                                      |
+| `script/server`    | Manages the production application server (Docker container)                       |
 
 ### Docker Scripts
 
@@ -34,6 +34,16 @@ This will:
 3. Install project dependencies
 4. Build the Docker image
 
+### Development
+
+For local development with hot-reloading:
+
+```bash
+yarn dev
+```
+
+This will start the development server with live reloading, error reporting, and other development features.
+
 ### Running Tests
 
 To run all tests:
@@ -44,9 +54,9 @@ To run all tests:
 
 This will run linting, unit tests, and type checking.
 
-### Managing the Server
+### Managing the Production Server
 
-Start the server:
+To build and start the application in production mode:
 
 ```bash
 ./script/server

@@ -2,12 +2,9 @@
 
 This project is a React application that allows you to manage SailPoint IdentityNow tasks.
 
-## Initial bootstrap
+## 🚀 Getting Started
 
-Once the repository is created, there is a `Initial bootstrapping` action that will run and replace all placeholders
-with the correct values. It will also create a new commit with the changes.
-
-## Local dev
+### Prerequisites
 
 Please use [developer-machine](https://github.com/turo/developer-machine) to install core development tooling.
 
@@ -16,19 +13,88 @@ Please use [developer-machine](https://github.com/turo/developer-machine) to ins
 ./install frontend
 ```
 
-To setup the project, simply run:
+### Initial Setup
+
+To set up the project, simply run:
 
 ```bash
 ./script/setup
 ```
 
-## Running the tests
+This will:
 
-Run the tests
+- Install all required dependencies (Node.js, Yarn)
+- Set up Git hooks
+- Install project dependencies
+- Build the Docker image
+- Create an `.env` file if it doesn't exist
+
+## 🧪 Development
+
+### Running in Development Mode
+
+For local development with hot-reloading:
+
+```bash
+yarn dev
+```
+
+This will start the development server with live reloading, error reporting, and other development features.
+
+### Running in Production Mode
+
+To build and run the application in production mode:
+
+```bash
+./script/server
+```
+
+This will build and start the SailPoint Task Manager in a Docker container, accessible at http://localhost:3005.
+
+Additional server commands:
+
+```bash
+./script/server stop      # Stop the server
+./script/server restart   # Restart the server
+./script/server logs      # View server logs
+./script/server status    # Check server status
+./script/server rebuild   # Rebuild and restart the server
+```
+
+### Running Tests
+
+Run the test suite:
 
 ```bash
 ./script/test
 ```
+
+This will run linting, unit tests, and type checking.
+
+## 🐳 Docker Operations
+
+The project includes Docker scripts to help manage container operations:
+
+```bash
+./script/docker build     # Build the Docker image
+./script/docker push <tag> # Tag and push the Docker image
+./script/docker clean     # Clean Docker resources
+./script/docker prune     # Deep clean Docker system
+```
+
+## 🛠️ Scripts to Rule Them All
+
+This project follows the ["Scripts to Rule Them All"](https://github.com/github/scripts-to-rule-them-all) pattern. All scripts can be found in the `script/` directory:
+
+| Script             | Description                            |
+| ------------------ | -------------------------------------- |
+| `script/setup`     | Sets up the project for the first time |
+| `script/bootstrap` | Installs/updates all dependencies      |
+| `script/test`      | Runs the test suite                    |
+| `script/server`    | Manages the application server         |
+| `script/docker`    | Manages Docker operations              |
+
+For more information, see [script/README.md](script/README.md).
 
 ## GitHub Workflows
 
