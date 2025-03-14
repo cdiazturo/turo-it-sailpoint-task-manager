@@ -7,6 +7,11 @@ set -e
 
 cd "$(dirname "$0")/.."
 
+# Load utilities
+source "script/utils.sh"
+
+section "Bootstrapping environment ${EMOJI_GEAR}"
+
 # Local only checks
 if [[ $CI != "true" ]]; then
 
@@ -16,27 +21,49 @@ if [[ $CI != "true" ]]; then
     . "$NVM_DIR/nvm.sh"
   fi
 
-  if ! [ "$(nvm --version)" ]; then
-    echo "==> Installing NVM…"
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+  if ! [ "$(command -v nvm)" ]; then
+    info "Installing NVM ${EMOJI_PACKAGE}..."
+    run_cmd "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash" ||
+      handle_error "Failed to install NVM. Please install manually: https://github.com/nvm-sh/nvm"
+
+    # Source NVM after installation
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
   else
-    echo "==> NVM is already installed…"
+    success "NVM is already installed"
   fi
 
   # Ensure node is installed
-  echo "==> Installing Node"
-  nvm install
-  nvm use
-
-  # Install yarn
-  if ! [ "$(yarn --version)" ]; then
-    echo "==> Installing yarn…"
-    npm install -g yarn --quiet --no-progress
+  section "Installing Node.js ${EMOJI_PACKAGE}"
+  if [ -f ".nvmrc" ]; then
+    run_cmd "nvm install" || handle_error "Failed to install Node.js"
+    run_cmd "nvm use" || handle_error "Failed to use the correct Node.js version"
+    node_version=$(node -v)
+    success "Using Node.js ${node_version}"
   else
-    echo "==> yarn is already installed…"
+    warning "No .nvmrc file found, using system Node.js"
   fi
 
-  echo -e "==>  Setting up commit hooks"
-  pre-commit install
-  pre-commit install --hook-type commit-msg
+  # Install yarn
+  section "Checking for yarn ${EMOJI_PACKAGE}"
+  if ! [ "$(command -v yarn)" ]; then
+    info "Installing yarn..."
+    run_cmd "npm install -g yarn --quiet --no-progress" || handle_error "Failed to install yarn"
+    success "Yarn installed successfully"
+  else
+    yarn_version=$(yarn --version)
+    success "Yarn is already installed (version ${yarn_version})"
+  fi
+
+  section "Setting up Git hooks ${EMOJI_GEAR}"
+  if [ "$(command -v pre-commit)" ]; then
+    run_cmd "pre-commit install" || warning "Failed to install pre-commit hooks"
+    run_cmd "pre-commit install --hook-type commit-msg" || warning "Failed to install commit-msg hooks"
+    success "Git hooks set up successfully"
+  else
+    warning "pre-commit not found. Skipping Git hooks setup."
+    info "To install pre-commit: pip install pre-commit"
+  fi
 fi
+
+success "Bootstrap complete! ${EMOJI_ROCKET}"

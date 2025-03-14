@@ -7,10 +7,27 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-script/bootstrap
+# Load utilities
+source "script/utils.sh"
 
-echo "==> Installing dependencies"
+section "Setting up SailPoint Task Manager"
 
-yarn
+info "Running bootstrap script..."
+./script/bootstrap
 
-echo "==> App is now ready to go!"
+section "Installing dependencies ${EMOJI_PACKAGE}"
+run_cmd "yarn" || handle_error "Failed to install dependencies"
+
+section "Setting up Docker ${EMOJI_DOCKER}"
+if [ ! -f ".env" ]; then
+  warning ".env file not found. Creating from .env.example..."
+  run_cmd "cp .env.example .env"
+  info "Please update .env with your SailPoint credentials"
+else
+  info ".env file already exists"
+fi
+
+run_cmd "docker compose build" || warning "Docker build failed. You might need to run 'docker compose build' manually."
+
+success "${EMOJI_ROCKET} App is now ready to go!"
+info "To start the application, run: ${BOLD}script/server${RESET}"

@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+
+# script/server: Start the application server locally.
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+# Load utilities
+source "script/utils.sh"
+
+ACTION=${1:-"start"}
+
+case "$ACTION" in
+  start)
+    section "Starting SailPoint Task Manager ${EMOJI_ROCKET}"
+
+    # Check if .env file exists
+    if [ ! -f ".env" ]; then
+      error "No .env file found. Run 'script/setup' first."
+      exit 1
+    fi
+
+    # Check if Docker is running
+    if ! docker info &>/dev/null; then
+      error "Docker is not running. Please start Docker and try again."
+      exit 1
+    fi
+
+    info "Starting Docker containers..."
+    run_cmd "docker compose up -d" || handle_error "Failed to start Docker containers"
+
+    container_status=$(docker compose ps --format json | grep -q '"State":"running"' && echo "running" || echo "stopped")
+
+    if [ "$container_status" == "running" ]; then
+      success "SailPoint Task Manager is now running!"
+      echo -e "${BOLD}${GREEN}Access it at:${RESET} ${BOLD}http://localhost:3005${RESET}"
+      echo ""
+      info "To view logs: ${BOLD}script/server logs${RESET}"
+      info "To stop: ${BOLD}script/server stop${RESET}"
+    else
+      error "Container started but is not running. Check logs with 'script/server logs'"
+      exit 1
+    fi
+    ;;
+
+  stop)
+    section "Stopping SailPoint Task Manager ${EMOJI_CLOCK}"
+    run_cmd "docker compose down" || handle_error "Failed to stop Docker containers"
+    success "SailPoint Task Manager stopped"
+    ;;
+
+  restart)
+    section "Restarting SailPoint Task Manager ${EMOJI_CLOCK}"
+    run_cmd "docker compose restart" || handle_error "Failed to restart Docker containers"
+    success "SailPoint Task Manager restarted"
+    echo -e "${BOLD}${GREEN}Access it at:${RESET} ${BOLD}http://localhost:3005${RESET}"
+    ;;
+
+  logs)
+    section "Viewing logs ${EMOJI_INFO}"
+    info "Press Ctrl+C to exit logs"
+    docker compose logs -f
+    ;;
+
+  status)
+    section "Container Status ${EMOJI_INFO}"
+    docker compose ps
+    ;;
+
+  rebuild)
+    section "Rebuilding and restarting ${EMOJI_DOCKER}"
+    run_cmd "docker compose build" || handle_error "Failed to rebuild Docker image"
+    run_cmd "docker compose up -d" || handle_error "Failed to start Docker containers"
+    success "SailPoint Task Manager rebuilt and restarted"
+    echo -e "${BOLD}${GREEN}Access it at:${RESET} ${BOLD}http://localhost:3005${RESET}"
+    ;;
+
+  *)
+    echo -e "${BOLD}Usage:${RESET}"
+    echo -e "  ${BOLD}script/server${RESET}          # Start the server"
+    echo -e "  ${BOLD}script/server stop${RESET}     # Stop the server"
+    echo -e "  ${BOLD}script/server restart${RESET}  # Restart the server"
+    echo -e "  ${BOLD}script/server logs${RESET}     # View server logs"
+    echo -e "  ${BOLD}script/server status${RESET}   # View container status"
+    echo -e "  ${BOLD}script/server rebuild${RESET}  # Rebuild and restart containers"
+    ;;
+esac

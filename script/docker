@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+
+# script/docker: Manage Docker operations for the application.
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+# Load utilities
+source "script/utils.sh"
+
+ACTION=${1:-"build"}
+
+case "$ACTION" in
+  build)
+    section "Building Docker image ${EMOJI_DOCKER}"
+    run_cmd "docker compose build" || handle_error "Failed to build Docker image"
+    success "Docker image built successfully"
+    ;;
+
+  push)
+    section "Pushing Docker image ${EMOJI_DOCKER}"
+
+    # Check if tag provided
+    if [ -z "$2" ]; then
+      error "No tag provided. Usage: script/docker push <tag>"
+      exit 1
+    fi
+
+    TAG="$2"
+    IMAGE_NAME="turo/it-sailpoint-task-manager:$TAG"
+
+    info "Tagging image as ${IMAGE_NAME}..."
+    run_cmd "docker tag turo/it-sailpoint-task-manager:latest ${IMAGE_NAME}" || handle_error "Failed to tag Docker image"
+
+    info "Pushing image ${IMAGE_NAME}..."
+    run_cmd "docker push ${IMAGE_NAME}" || handle_error "Failed to push Docker image"
+
+    success "Docker image pushed successfully"
+    ;;
+
+  clean)
+    section "Cleaning Docker resources ${EMOJI_DOCKER}"
+
+    info "Removing containers..."
+    run_cmd "docker compose down -v" || warning "Failed to remove containers"
+
+    info "Pruning unused images..."
+    run_cmd "docker image prune -f" || warning "Failed to prune images"
+
+    success "Docker resources cleaned successfully"
+    ;;
+
+  prune)
+    section "Deep cleaning Docker system ${EMOJI_DOCKER}"
+    warning "This will remove all unused containers, networks, images and volumes."
+    read -p "Are you sure you want to continue? (y/N) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+      info "Pruning Docker system..."
+      run_cmd "docker system prune -a -f --volumes" || warning "Failed to prune Docker system"
+      success "Docker system pruned successfully"
+    else
+      info "Operation cancelled"
+    fi
+    ;;
+
+  *)
+    echo -e "${BOLD}Usage:${RESET}"
+    echo -e "  ${BOLD}script/docker${RESET}              # Build Docker image"
+    echo -e "  ${BOLD}script/docker build${RESET}        # Build Docker image"
+    echo -e "  ${BOLD}script/docker push <tag>${RESET}   # Push Docker image with tag"
+    echo -e "  ${BOLD}script/docker clean${RESET}        # Remove containers and prune images"
+    echo -e "  ${BOLD}script/docker prune${RESET}        # Deep clean Docker system"
+    ;;
+esac
