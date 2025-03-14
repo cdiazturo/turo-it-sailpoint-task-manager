@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="true" type="JavaScriptTestRunnerJest">
+    <node-interpreter value="project" />
+    <node-options value="--experimental-vm-modules" />
+    <working-dir value="" />
+    <envs>
+      <env name="NEW_RELIC_ENABLED" value="false" />
+    </envs>
+    <scope-kind value="ALL" />
+    <method v="2" />
+  </configuration>
+</component>

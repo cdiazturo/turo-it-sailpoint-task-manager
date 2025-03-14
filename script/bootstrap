@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+# script/bootstrap: Resolve all dependencies that the application requires to
+#                   run.
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+# Local only checks
+if [[ $CI != "true" ]]; then
+
+  # NVM
+  # Register NVM env variables if NVM_DIR is set
+  if [ -n "$NVM_DIR" ]; then
+    . "$NVM_DIR/nvm.sh"
+  fi
+
+  if ! [ "$(nvm --version)" ]; then
+    echo "==> Installing NVM…"
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+  else
+    echo "==> NVM is already installed…"
+  fi
+
+  # Ensure node is installed
+  echo "==> Installing Node"
+  nvm install
+  nvm use
+
+  # Install yarn
+  if ! [ "$(yarn --version)" ]; then
+    echo "==> Installing yarn…"
+    npm install -g yarn --quiet --no-progress
+  else
+    echo "==> yarn is already installed…"
+  fi
+
+  echo -e "==>  Setting up commit hooks"
+  pre-commit install
+  pre-commit install --hook-type commit-msg
+fi

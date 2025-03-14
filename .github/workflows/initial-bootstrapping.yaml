@@ -1,0 +1,44 @@
+# GitHub Actions Workflow responsible for the initial bootstrapping of the repository from
+# it's parent template. This workflow is supposed to be triggered automatically when a new template-based repository has been created.
+
+name: Initial Bootstrapping
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  initial-bootstrap:
+    name: Initial Bootstrap
+    runs-on: [self-hosted, general-ubuntu]
+    if: github.event.repository.name != 'typescript-template'
+    steps:
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.TURO_GITHUB_WORKFLOWS_APP_ID }}
+          private-key: ${{ secrets.TURO_GITHUB_WORKFLOWS_APP_PRIVATE_KEY }}
+          # Creates a token for all the repositories in the current owner's (turo) installation
+          # See this for more information: https://github.com/actions/create-github-app-token?tab=readme-ov-file#create-a-token-for-all-repositories-in-the-current-owners-installation
+          owner: ${{ github.repository_owner }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Initial bootstrap
+        run: script/init-repo-placeholders
+        shell: bash
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "chore: initialize repository"
+
+      # Push changes
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          branch: main
+          github_token: ${{ secrets.GITHUB_TOKEN }}

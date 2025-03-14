@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+
+set -e
+
+merge_config_json() {
+  local src=$1
+  local target=$2
+  local temp_file
+
+  temp_file=$(mktemp)
+
+  if [[ -f "$target" ]]; then
+      jq -s '.[0] * .[1]' "$src" "$target" > "$temp_file" && mv "$temp_file" "$target"
+  else
+      # If target does not exist, override it with source
+      cp "$src" "$target"
+  fi
+
+  rm -f "$temp_file"
+}
+
+dest_repo=$1
+if [ ! -d "$dest_repo" ]; then
+	echo "Directory $dest_repo DOES NOT exists."
+	exit 1
+fi
+
+current_dir=$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
+template_repo=$(dirname "$current_dir")
+
+# Sync scripts
+mkdir -p "$dest_repo"/script
+cp "$template_repo"/script/* "$dest_repo"/script
+# remove scripts that are not needed
+rm -rf "$dest_repo"/script/init-repo-placeholders
+rm -rf "$dest_repo"/script/sync-environment
+rm -rf "$dest_repo"/script/docker-build
+
+# Sync github actions and configuration
+mkdir -p "$dest_repo"/.github/workflows
+cp "$template_repo"/.github/*.yaml "$dest_repo"/.github
+cp "$template_repo"/.github/workflows/*.yaml "$dest_repo"/.github/workflows
+# Copy renovate config, but respect the customized renovate config
+merge_config_json "$template_repo"/.github/renovate.json "$dest_repo"/.github/renovate.json
+
+# Remove workflows that are no longer needed if they exist
+rm -rf "$dest_repo"/.github/workflows/bootstrap-workflows.yaml
+rm -rf "$dest_repo"/.github/workflows/initial-bootstrapping.yaml
+rm -rf "$dest_repo"/.github/workflows/build.trigger.yaml
+
+# Sync configuration files
+cp "$template_repo"/.commitlintrc.yaml "$dest_repo"/
+cp "$template_repo"/.pre-commit-config.yaml "$dest_repo"/
+cp "$template_repo"/.releaserc.json "$dest_repo"/
+cp "$template_repo"/.npmrc "$dest_repo"/
+cp "$template_repo"/.yarnrc "$dest_repo"/
+
+cp -n "$template_repo"/.nvmrc "$dest_repo"/ || true
+
+# If in the destination repo there is a sync-environment.patch file
+# git apply it
+if [ -f "$dest_repo"/sync-environment.patch ]; then
+	cd "$dest_repo"
+	git apply sync-environment.patch || echo "Failed to apply sync-environment.patch"
+	cd -
+fi
+
+# shellcheck disable=SC2015
+(cd "$dest_repo" && pre-commit run -a || true)

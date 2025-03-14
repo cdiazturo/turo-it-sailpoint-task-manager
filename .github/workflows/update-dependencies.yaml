@@ -1,0 +1,16 @@
+name: Update dependencies
+
+on:
+  workflow_dispatch:
+  issue_comment:
+    types:
+      - edited
+  pull_request:
+    types:
+      - edited
+      - synchronize
+
+jobs:
+  update-dependencies:
+    uses: turo/dependency-management-tools/.github/workflows/reusable-workflow.update-dependencies.yaml@v1
+    secrets: inherit

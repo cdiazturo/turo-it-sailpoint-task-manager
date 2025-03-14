@@ -1,0 +1,77 @@
+name: Sync environment from template repo
+
+on:
+  schedule:
+    - cron: "30 10 * * 1" # “At 10:30 on Monday”
+  workflow_dispatch:
+
+env:
+  SOURCE: typescript-template
+
+jobs:
+  sync:
+    name: Synchronize scripts from template repo
+    runs-on: [self-hosted, general-ubuntu]
+    if: contains(github.repository , 'template') == false
+
+    steps:
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.TURO_GITHUB_WORKFLOWS_APP_ID }}
+          private-key: ${{ secrets.TURO_GITHUB_WORKFLOWS_APP_PRIVATE_KEY }}
+          # Creates a token for all the repositories in the current owner's (turo) installation
+          # See this for more information: https://github.com/actions/create-github-app-token?tab=readme-ov-file#create-a-token-for-all-repositories-in-the-current-owners-installation
+          owner: ${{ github.repository_owner }}
+      - name: Fetch this repository
+        uses: actions/checkout@v4
+
+      - name: Force remove previous temp-source directory if it exists
+        run: |
+          if [[ -d temp-source ]]; then
+            rm -rf temp-source
+          fi
+
+      - name: Fetch the module template repository so that its sync-environment script is accessible here
+        uses: actions/checkout@v4
+        with:
+          repository: turo/${{ env.SOURCE }}
+          path: temp-source
+          ref: main
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Setup tools
+        uses: open-turo/action-setup-tools@v2
+
+      - name: Sync scripts from source repository
+        run: |
+          ./temp-source/script/sync-environment .
+        env:
+          NPM_CONFIG_GLOBALCONFIG: ${{github.workspace}}/.npmrc # pre-commit ignores the project level .npmrc file
+          NPM_AUTH_TOKEN: ${{ secrets.ARTIFACTORY_NPM_AUTH_TOKEN }}
+
+      - name: Remove no longer needed temp-source directory
+        if: always()
+        run: rm -rf temp-source
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v7
+        id: cpr
+        with:
+          branch: sync-environment-pr
+          token: ${{ steps.app-token.outputs.token }}
+          base: main
+          commit-message: "ci: synchronize scripts from turo/${{ env.SOURCE }}"
+          title: "[bot] synchronize template scripts"
+          body: |
+            Synchronize scripts with [turo/${{ env.SOURCE }}][1]
+
+            [1]: https://github.com/turo/${{ env.SOURCE }}
+          labels: |
+            automated
+            auto-merge
+
+      - name: Check outputs
+        run: |
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"

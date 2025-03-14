@@ -1,0 +1,10 @@
+name: Update dependencies - Auto approve
+
+on:
+  pull_request_target:
+    types:
+      - opened
+jobs:
+  auto-approve:
+    uses: turo/dependency-management-tools/.github/workflows/reusable-workflow.update-dependencies.auto-approve.yaml@v1
+    secrets: inherit

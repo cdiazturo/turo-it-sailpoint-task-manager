@@ -1,0 +1,20 @@
+{
+  "extends": [
+    "github>open-turo/renovate-config#v1",
+    "github>open-turo/renovate-config:npm-lib#v1"
+  ],
+  "ignorePresets": ["group:allNonMajor"],
+  "packageRules": [
+    {
+      "matchPackagePatterns": ["@turo*"],
+      "prPriority": 1
+    },
+    {
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-minor-patch",
+      "matchPackagePatterns": ["*"],
+      "excludePackagePatterns": ["@turo*"],
+      "matchUpdateTypes": ["minor", "patch"]
+    }
+  ]
+}

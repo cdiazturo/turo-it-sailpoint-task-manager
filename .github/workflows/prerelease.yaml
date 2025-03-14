@@ -1,0 +1,48 @@
+name: Prerelease
+
+on:
+  pull_request:
+    types:
+      - opened
+      - labeled
+      - synchronize
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build-image:
+    name: Build image
+    runs-on: [self-hosted, general-ubuntu]
+    if: contains(github.event.pull_request.labels.*.name, 'prerelease')
+    steps:
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.TURO_GITHUB_WORKFLOWS_APP_ID }}
+          private-key: ${{ secrets.TURO_GITHUB_WORKFLOWS_APP_PRIVATE_KEY }}
+          # Creates a token for all the repositories in the current owner's (turo) installation
+          # See this for more information: https://github.com/actions/create-github-app-token?tab=readme-ov-file#create-a-token-for-all-repositories-in-the-current-owners-installation
+          owner: ${{ github.repository_owner }}
+      - name: Prerelease
+        id: prerelease
+        uses: open-turo/actions-node/prerelease@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          create-prerelease: false
+          npm-auth-token: ${{ secrets.ARTIFACTORY_NPM_AUTH_TOKEN }}
+
+      - name: Repository Dispatch
+        if: steps.prerelease.outputs.new-release-published == 'true'
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          repository: turo/dev-sbx-deployments
+          event-type: tracking-pr-image-updated-command
+          # The image-tag in the payload uses the same version used to build the docker image
+          client-payload: |
+            {
+              "image": "turo/__PROJECT_NAME__:${{ steps.prerelease.outputs.new-release-version }}",
+              "pull-request": "${{ steps.prerelease.outputs.pull-request-number }}",
+              "repo": "${{ github.repository }}",
+              "run-url": "${{ steps.prerelease.outputs.run-url }}"
+            }

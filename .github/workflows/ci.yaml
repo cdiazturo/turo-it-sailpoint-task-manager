@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  NODE_MODULES_CACHE_BUCKET_NAME: core-servi-github-actions-build-cach20240118162152102700000001
+  NODE_MODULES_CACHE_BUCKET_REGION: us-east-1
+  NPM_AUTH_TOKEN: ${{ secrets.ARTIFACTORY_NPM_AUTH_TOKEN }}
+
+jobs:
+  build:
+    name: Build
+    runs-on: [self-hosted, general-ubuntu]
+    steps:
+      - uses: open-turo/actions-node/build@v6
+        with:
+          npm-auth-token: ${{ secrets.ARTIFACTORY_NPM_AUTH_TOKEN }}
+          s3-bucket-name: ${{ env.NODE_MODULES_CACHE_BUCKET_NAME }}
+          s3-bucket-region: ${{ env.NODE_MODULES_CACHE_BUCKET_REGION }}
+  lint:
+    name: Lint
+    runs-on: [self-hosted, general-ubuntu]
+    steps:
+      - uses: open-turo/actions-node/lint@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          npm-auth-token: ${{ secrets.ARTIFACTORY_NPM_AUTH_TOKEN }}
+          internal-dependency-prefixes: "@turo"
+          s3-bucket-name: ${{ env.NODE_MODULES_CACHE_BUCKET_NAME }}
+          s3-bucket-region: ${{ env.NODE_MODULES_CACHE_BUCKET_REGION }}
+    env:
+      NPM_CONFIG_GLOBALCONFIG: ${{github.workspace}}/.npmrc # pre-commit ignores the project level .npmrc file
+  test:
+    needs: build
+    name: Test
+    runs-on: [self-hosted, general-ubuntu]
+    steps:
+      - uses: open-turo/actions-node/test@v6
+        with:
+          npm-auth-token: ${{ secrets.ARTIFACTORY_NPM_AUTH_TOKEN }}
+          test-flags: --coverage
+          s3-bucket-name: ${{ env.NODE_MODULES_CACHE_BUCKET_NAME }}
+          s3-bucket-region: ${{ env.NODE_MODULES_CACHE_BUCKET_REGION }}
+      - name: Upload coverage
+        if: ${{ env.COVERALLS_REPO_TOKEN != '' }}
+        uses: coverallsapp/github-action@v2
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
