@@ -1,33 +1,22 @@
-FROM node:22.14-alpine
+FROM node:20-alpine AS development-dependencies-env
+COPY . /app
+WORKDIR /app
+RUN npm ci
 
-ENV PORT 80
-ENV YARN_VERSION 1.21.1
-ENV NODE_ENV production
+FROM node:20-alpine AS production-dependencies-env
+COPY ./package.json package-lock.json /app/
+WORKDIR /app
+RUN npm ci --omit=dev
 
-# Install yarn
-RUN apk add --no-cache --virtual .build-deps-yarn curl \
-  && curl -fSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
-  && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/ \
-  && ln -snf /opt/yarn-v$YARN_VERSION/bin/yarn /usr/local/bin/yarn \
-  && ln -snf /opt/yarn-v$YARN_VERSION/bin/yarnpkg /usr/local/bin/yarnpkg \
-  && rm yarn-v$YARN_VERSION.tar.gz \
-  && apk del .build-deps-yarn
+FROM node:20-alpine AS build-env
+COPY . /app/
+COPY --from=development-dependencies-env /app/node_modules /app/node_modules
+WORKDIR /app
+RUN npm run build
 
-# Copies package
-WORKDIR /usr/__PROJECT_NAME__
-
-COPY package.json package.json
-COPY lib lib
-# COPY config config
-COPY .npmrc .
-COPY .yarnrc .
-COPY yarn.lock .
-RUN ls -la
-
-RUN --mount=type=secret,id=npm_auth_token,required NPM_AUTH_TOKEN=`cat /run/secrets/npm_auth_token` yarn --pure-lockfile --production
-RUN --mount=type=secret,id=npm_auth_token,required NPM_AUTH_TOKEN=`cat /run/secrets/npm_auth_token` yarn cache clean
-
-RUN rm .npmrc
-
-WORKDIR /usr/__PROJECT_NAME__
-CMD [ "node", "lib/index.js"]
+FROM node:20-alpine
+COPY ./package.json package-lock.json /app/
+COPY --from=production-dependencies-env /app/node_modules /app/node_modules
+COPY --from=build-env /app/build /app/build
+WORKDIR /app
+CMD ["npm", "run", "start"]

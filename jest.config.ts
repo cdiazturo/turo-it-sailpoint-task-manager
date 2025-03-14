@@ -6,7 +6,6 @@ const config = {
     "~test/*": ["./test/*"],
   },
   preset: "ts-jest",
-  prettierPath: require.resolve("prettier-2"),
   transform: {
     "\\.js$": "babel-jest",
     "^.+\\.tsx?$": "ts-jest",

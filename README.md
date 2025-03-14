@@ -1,8 +1,6 @@
-# {**PROJECT_NAME**}
+# SailPoint IdentityNow Task Manager
 
-Template for Typescript Repositories
-
-This project follows the [scripts to rule them all](https://github.com/github/scripts-to-rule-them-all) convention.
+This project is a React application that allows you to manage SailPoint IdentityNow tasks.
 
 ## Initial bootstrap
 
