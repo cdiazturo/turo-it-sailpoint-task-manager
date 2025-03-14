@@ -150,6 +150,7 @@ interface TaskListProperties {
   currentPage?: number;
   description?: string;
   loading: boolean;
+  onCancelTask?: (taskId: string) => void;
   onPageChange?: (page: number) => void;
   onViewDetails?: (taskId: string) => void;
   pageSize?: number;
@@ -163,7 +164,6 @@ export function TaskList({
   description,
   loading,
   onPageChange,
-  onViewDetails,
   pageSize = 10,
   tasks,
   totalCount = 0,
@@ -264,16 +264,26 @@ export function TaskList({
                     </h3>
                   </div>
                   <div className="flex items-center gap-2">
-                    {onViewDetails && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        asChild
-                        className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-md"
-                      >
-                        <Link to={`/tasks/${task.id}`}>View Details</Link>
-                      </Button>
-                    )}
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      asChild
+                      //   className="hover:bg-interactive-secondary hover:text-interactive-secondary-text rounded-md"
+                    >
+                      <Link to={`/tasks/${task.id}`}>View Details</Link>
+                    </Button>
+
+                    {/* Cancel Task button - only show for in-progress tasks */}
+
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      //   onClick={() => onCancelTask(task.id)}
+                    >
+                      <X className="mr-1 h-3.5 w-3.5" />
+                      Cancel
+                    </Button>
+
                     <Button
                       variant="ghost"
                       size="sm"

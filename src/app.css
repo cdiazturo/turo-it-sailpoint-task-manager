@@ -129,6 +129,12 @@
   --icon-error: rgb(181, 10, 13);
   --icon-warning: rgb(237, 145, 15);
   --icon-info: "#1B69DA";
+  --interactive-destructive-hover: rgb(181, 10, 13);
+  --interactive-destructive-pressed: rgb(135, 0, 0);
+  --text-contrast: rgb(255, 255, 255);
+  --interactive-secondary: rgb(65, 65, 67);
+  --interactive-secondary-hover: rgb(137, 137, 137);
+  --interactive-secondary-pressed: rgb(42, 42, 42);
 }
 
 .dark {
@@ -176,6 +182,12 @@
   --icon-error: rgb(223, 25, 32);
   --icon-warning: rgb(237, 145, 15);
   --icon-info: "#4E9EF2";
+  --interactive-destructive-hover: rgb(181, 10, 13);
+  --interactive-destructive-pressed: rgb(135, 0, 0);
+  --text-contrast: rgb(237, 237, 237);
+  --interactive-secondary: rgb(237, 237, 237);
+  --interactive-secondary-hover: rgb(137, 137, 137);
+  --interactive-secondary-pressed: rgb(160, 160, 160);
 }
 
 @theme inline {
@@ -229,6 +241,15 @@
   --color-icon-warning: var(--icon-warning);
   --color-icon-info: var(--icon-info);
   --color-text-info: var(--text-info);
+  --color-text-contrast: var(--text-contrast);
+  --color-interactive-destructive-hover: var(--interactive-destructive-hover);
+  --color-interactive-destructive-pressed: var(
+    --interactive-destructive-pressed
+  );
+  --color-interactive-secondary: var(--interactive-secondary);
+  --color-interactive-secondary-hover: var(--interactive-secondary-hover);
+  --color-interactive-secondary-pressed: var(--interactive-secondary-pressed);
+
   @keyframes accordion-down {
     from {
       height: 0;
