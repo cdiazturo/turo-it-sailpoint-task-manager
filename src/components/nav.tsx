@@ -1,26 +1,30 @@
-import { Menu, Settings } from "lucide-react";
+"use client";
+
+import { LogOut, Menu, Settings } from "lucide-react";
 import * as React from "react";
-import { Link, useLocation } from "react-router";
+import { NavLink } from "react-router";
 
 import { TuroLogo } from "@/components/turo-logo";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
 export function MainNav() {
-  const location = useLocation();
-  const pathname = location.pathname;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
   const routes = [
     {
       href: "/",
       label: "Dashboard",
-      active: pathname === "/",
     },
     {
       href: "/tasks",
       label: "All Tasks",
-      active: pathname === "/tasks",
     },
   ];
 
@@ -28,44 +32,47 @@ export function MainNav() {
     <div className="fixed top-0 left-0 right-0 z-50 bg-surface-primary border-b border-stroke-primary">
       <div className="flex h-20 items-center px-8 container max-w-screen-2xl mx-auto">
         <div className="flex items-center space-x-12">
-          <Link to="/" className="flex items-center">
+          <NavLink to="/" className="flex items-center">
             <TuroLogo
               variant="filled"
               width={100}
               height={32}
               color="currentColor"
             />
-          </Link>
+          </NavLink>
           <nav className="hidden md:flex items-center space-x-8">
             {routes.map((route) => (
-              <Link
+              <NavLink
                 key={route.href}
                 to={route.href}
-                className={cn(
-                  "text-sm font-medium transition-colors hover:text-interactive relative py-2",
-                  route.active
-                    ? "text-interactive after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-interactive"
-                    : "text-text-secondary",
-                )}
+                className={({ isActive }) =>
+                  cn(
+                    "text-sm font-medium transition-colors hover:text-interactive relative py-2",
+                    isActive
+                      ? "text-interactive after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-interactive"
+                      : "text-text-secondary",
+                  )
+                }
               >
                 {route.label}
-              </Link>
+              </NavLink>
             ))}
           </nav>
         </div>
         <div className="ml-auto flex items-center space-x-6">
+          {/* <ThemeToggle /> */}
           <Button
             variant="ghost"
             size="icon"
             asChild
             className="hover:bg-surface-secondary"
           >
-            <Link to="/settings">
+            <NavLink to="/settings">
               <Settings className="h-5 w-5" />
               <span className="sr-only">Settings</span>
-            </Link>
+            </NavLink>
           </Button>
-          {/* <DropdownMenu>
+          <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
@@ -81,7 +88,7 @@ export function MainNav() {
                 Logout
               </DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu> */}
+          </DropdownMenu>
           <Button
             className="md:hidden"
             variant="ghost"
@@ -97,17 +104,19 @@ export function MainNav() {
         <div className="md:hidden border-t border-stroke-primary p-4">
           <nav className="flex flex-col space-y-4">
             {routes.map((route) => (
-              <Link
+              <NavLink
                 key={route.href}
                 to={route.href}
-                className={cn(
-                  "text-sm font-medium transition-colors hover:text-interactive",
-                  route.active ? "text-interactive" : "text-text-secondary",
-                )}
+                className={({ isActive }) =>
+                  cn(
+                    "text-sm font-medium transition-colors hover:text-interactive",
+                    isActive ? "text-interactive" : "text-text-secondary",
+                  )
+                }
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {route.label}
-              </Link>
+              </NavLink>
             ))}
           </nav>
         </div>

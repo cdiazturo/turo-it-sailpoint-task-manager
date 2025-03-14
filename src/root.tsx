@@ -1,5 +1,6 @@
 import "./app.css";
 
+import { ThemeProvider } from "next-themes";
 import {
   isRouteErrorResponse,
   Links,
@@ -37,13 +38,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="antialiased">
-        <div className="min-h-screen bg-background">
-          <MainNav />
-          <main className="container max-w-screen-2xl mx-auto px-8 pt-32 pb-16">
-            {children}
-          </main>
-        </div>
-        <Toaster />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <div className="min-h-screen bg-background">
+            <MainNav />
+            <main className="container max-w-screen-2xl mx-auto px-8 pt-32 pb-16">
+              {children}
+            </main>
+          </div>
+          <Toaster />
+        </ThemeProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
