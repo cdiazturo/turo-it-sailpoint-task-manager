@@ -1,22 +1,40 @@
-FROM node:20-alpine AS development-dependencies-env
-COPY . /app
-WORKDIR /app
-RUN npm ci
+FROM node:22.14-alpine AS base
+ENV NODE_ENV=production
+ENV PORT=80
 
-FROM node:20-alpine AS production-dependencies-env
-COPY ./package.json package-lock.json /app/
+# Build stage for dependencies
+FROM base AS dependencies
 WORKDIR /app
-RUN npm ci --omit=dev
 
-FROM node:20-alpine AS build-env
-COPY . /app/
-COPY --from=development-dependencies-env /app/node_modules /app/node_modules
-WORKDIR /app
-RUN npm run build
+# Copy package files
+COPY package.json yarn.lock ./
 
-FROM node:20-alpine
-COPY ./package.json package-lock.json /app/
-COPY --from=production-dependencies-env /app/node_modules /app/node_modules
-COPY --from=build-env /app/build /app/build
+# Install dependencies
+RUN yarn install --frozen-lockfile --production=false
+
+# Build stage for application
+FROM dependencies AS build
 WORKDIR /app
-CMD ["npm", "run", "start"]
+
+# Copy application code
+COPY . .
+
+# Build the application
+RUN yarn build
+
+# Production stage
+FROM base AS production
+WORKDIR /app
+
+# Copy package files for production
+COPY package.json yarn.lock ./
+
+# Install only production dependencies
+RUN yarn install --frozen-lockfile --production=true && \
+    yarn cache clean
+
+# Copy built application from build stage
+COPY --from=build /app/build ./build
+
+# Use the start command from package.json
+CMD ["yarn", "start"]

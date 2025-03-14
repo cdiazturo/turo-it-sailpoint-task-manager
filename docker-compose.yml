@@ -1,0 +1,17 @@
+services:
+  sailpoint-task-manager:
+    image: turo/it-sailpoint-task-manager
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sailpoint-task-manager
+    ports:
+      - "3005:80"
+    environment:
+      - SAIL_BASE_URL=${SAIL_BASE_URL}
+      - SAIL_CLIENT_ID=${SAIL_CLIENT_ID}
+      - SAIL_CLIENT_SECRET=${SAIL_CLIENT_SECRET}
+      - NODE_ENV=production
+    restart: unless-stopped
+    env_file:
+      - .env
