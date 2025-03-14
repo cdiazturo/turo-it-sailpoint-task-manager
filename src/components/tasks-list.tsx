@@ -9,7 +9,6 @@ import {
   FileText,
   Info,
   Loader2,
-  RefreshCw,
   Server,
   User,
   X,
@@ -19,6 +18,7 @@ import { useState } from "react";
 import { Link } from "react-router";
 import type { TaskStatusBeta } from "sailpoint-api-client";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -102,6 +102,23 @@ const calculateDuration = (
   }
 };
 
+// Adjust percentComplete based on completion status
+const adjustPercentComplete = (
+  percentComplete: number | undefined,
+  completionStatus: string | null | undefined,
+) => {
+  // If percentComplete is 0 and status is not "In Progress", set to 100
+  if (
+    percentComplete === 0 &&
+    completionStatus &&
+    completionStatus.toLowerCase() !== "in progress"
+  ) {
+    return 100;
+  }
+
+  return percentComplete;
+};
+
 // Summarize task results from the attributes
 const summarizeTaskResults = (task: TaskStatusBeta) => {
   if (!task.attributes) return [];
@@ -134,10 +151,8 @@ interface TaskListProperties {
   description?: string;
   loading: boolean;
   onPageChange?: (page: number) => void;
-  onRefresh?: () => void;
   onViewDetails?: (taskId: string) => void;
   pageSize?: number;
-  refreshing: boolean;
   tasks: TaskStatusBeta[];
   title: string;
   totalCount?: number;
@@ -148,10 +163,8 @@ export function TaskList({
   description,
   loading,
   onPageChange,
-  onRefresh,
   onViewDetails,
   pageSize = 10,
-  refreshing,
   tasks,
   totalCount = 0,
 }: TaskListProperties) {
@@ -216,7 +229,12 @@ export function TaskList({
                       </span>
                       {task.percentComplete != undefined && (
                         <span className="text-xs text-muted-foreground">
-                          ({task.percentComplete}%)
+                          (
+                          {adjustPercentComplete(
+                            task.percentComplete,
+                            task.completionStatus,
+                          )}
+                          %)
                         </span>
                       )}
                     </div>
@@ -249,9 +267,32 @@ export function TaskList({
                   {/* Progress indicator */}
                   {task.percentComplete != undefined && (
                     <div className="space-y-1">
-                      <Progress value={task.percentComplete} />
+                      <Progress
+                        value={adjustPercentComplete(
+                          task.percentComplete,
+                          task.completionStatus,
+                        )}
+                      />
                     </div>
                   )}
+
+                  {/* Error Alert */}
+                  {(task.completionStatus?.toLowerCase() === "error" ||
+                    task.completionStatus?.toLowerCase() === "failed") &&
+                    task.messages &&
+                    task.messages.length > 0 && (
+                      <Alert variant="destructive">
+                        <XCircle className="h-4 w-4" />
+                        <AlertTitle>Error</AlertTitle>
+                        <AlertDescription>
+                          {task.messages.map((message, index) => (
+                            <p key={index}>
+                              {String(message.localizedText?.message)}
+                            </p>
+                          ))}
+                        </AlertDescription>
+                      </Alert>
+                    )}
 
                   {/* Task key information - always visible */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
@@ -350,18 +391,22 @@ export function TaskList({
                             Task Definition
                           </div>
                           <div className="pl-5 text-sm">
-                            <div>
-                              Name: {task.taskDefinitionSummary.uniqueName}
-                            </div>
+                            <span className="text-muted-foreground">Name:</span>{" "}
+                            {task.taskDefinitionSummary.uniqueName}
                             {task.taskDefinitionSummary.description && (
                               <div>
-                                Description:{" "}
+                                <span className="text-muted-foreground">
+                                  Description:
+                                </span>{" "}
                                 {task.taskDefinitionSummary.description}
                               </div>
                             )}
                             {task.taskDefinitionSummary.executor && (
                               <div>
-                                Executor: {task.taskDefinitionSummary.executor}
+                                <span className="text-muted-foreground">
+                                  Executor:
+                                </span>{" "}
+                                {task.taskDefinitionSummary.executor}
                               </div>
                             )}
                           </div>
@@ -513,21 +558,6 @@ export function TaskList({
     <div>
       {description && (
         <p className="text-muted-foreground mb-4">{description}</p>
-      )}
-      {onRefresh && (
-        <div className="flex justify-end mb-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onRefresh}
-            disabled={refreshing}
-          >
-            <RefreshCw
-              className={`mr-2 h-4 w-4 ${refreshing ? "animate-spin" : ""}`}
-            />
-            {refreshing ? "Refreshing..." : "Refresh"}
-          </Button>
-        </div>
       )}
       {renderContent()}
     </div>

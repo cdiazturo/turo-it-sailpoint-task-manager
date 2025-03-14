@@ -13,7 +13,7 @@ export function meta(_arguments: Route.MetaArgs) {
     { title: "SailPoint Task Manager" },
     {
       name: "description",
-      content: "Manage SailPoint tasks with Turo branding",
+      content: "Manage SailPoint Tasks",
     },
   ];
 }

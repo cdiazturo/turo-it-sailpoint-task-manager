@@ -21,6 +21,16 @@ import { getSailpointConfig } from "@/lib/sailpoint";
 
 import type { Route } from "./+types/tasks";
 
+export function meta(_arguments: Route.MetaArgs) {
+  return [
+    { title: "SailPoint Tasks" },
+    {
+      name: "description",
+      content: "Retrieve and manage SailPoint tasks",
+    },
+  ];
+}
+
 export async function loader({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   params,
@@ -28,7 +38,10 @@ export async function loader({
   try {
     const config = getSailpointConfig();
     const api = new TaskManagementBetaApi(config);
-    const tasks = await api.getTaskStatusList();
+    const tasks = await api.getTaskStatusList({
+      limit: 10,
+      sorters: "-created",
+    });
     return tasks;
   } catch (error) {
     console.error("Failed to load tenant information:", error);
@@ -42,17 +55,12 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
   const submit = useSubmit();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | undefined>();
-  const [typeFilter, setTypeFilter] = useState<string | undefined>();
 
   // Extract unique status and type values for filters
   const statuses = [
     ...new Set(
       tasks.map((task) => task.completionStatus).filter(Boolean) as string[],
     ),
-  ];
-
-  const types = [
-    ...new Set(tasks.map((task) => task.type).filter(Boolean) as string[]),
   ];
 
   // Filter tasks based on search query and filters
@@ -68,12 +76,12 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
 
     // Filter by status
     const matchesStatus =
-      !statusFilter || task.completionStatus === statusFilter;
+      !statusFilter ||
+      (statusFilter === "In Progress"
+        ? !task.completionStatus
+        : task.completionStatus === statusFilter);
 
-    // Filter by type
-    const matchesType = !typeFilter || task.type === typeFilter;
-
-    return matchesSearch && matchesStatus && matchesType;
+    return matchesSearch && matchesStatus;
   });
 
   const handleRefresh = () => {
@@ -127,28 +135,10 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="_all">All Statuses</SelectItem>
+                <SelectItem value="In Progress">IN PROGRESS</SelectItem>
                 {statuses.map((status) => (
                   <SelectItem key={status} value={status}>
                     {status}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select
-              value={typeFilter || ""}
-              onValueChange={(value) =>
-                setTypeFilter(value === "_all" ? undefined : value)
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Filter by type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="_all">All Types</SelectItem>
-                {types.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -157,13 +147,7 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
         </CardContent>
       </Card>
 
-      <TaskList
-        tasks={filteredTasks}
-        loading={isLoading}
-        refreshing={isLoading}
-        title={"Tasks"}
-        onRefresh={handleRefresh}
-      />
+      <TaskList tasks={filteredTasks} loading={isLoading} title={"Tasks"} />
     </div>
   );
 }
