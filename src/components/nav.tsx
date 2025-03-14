@@ -29,7 +29,7 @@ export function MainNav() {
   ];
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 bg-surface-primary border-b border-stroke-primary">
+    <div className="fixed top-0 left-0 right-0 z-50 bg-surface-01 border-b border-stroke-01 elevation-1">
       <div className="flex h-20 items-center px-8 container max-w-screen-2xl mx-auto">
         <div className="flex items-center space-x-12">
           <NavLink to="/" className="flex items-center">
@@ -47,10 +47,10 @@ export function MainNav() {
                 to={route.href}
                 className={({ isActive }) =>
                   cn(
-                    "text-sm font-medium transition-colors hover:text-interactive relative py-2",
+                    "text-sm font-medium transition-colors hover:text-interactive-01 relative py-2",
                     isActive
-                      ? "text-interactive after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-interactive"
-                      : "text-text-secondary",
+                      ? "text-interactive-01 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-interactive-01"
+                      : "text-text-02",
                   )
                 }
               >
@@ -65,7 +65,7 @@ export function MainNav() {
             variant="ghost"
             size="icon"
             asChild
-            className="hover:bg-surface-secondary"
+            className="hover:bg-surface-02"
           >
             <NavLink to="/settings">
               <Settings className="h-5 w-5" />
@@ -82,7 +82,7 @@ export function MainNav() {
                 Account
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="elevation-2">
               <DropdownMenuItem className="text-sm">
                 <LogOut className="mr-2 h-4 w-4" />
                 Logout
@@ -101,7 +101,7 @@ export function MainNav() {
         </div>
       </div>
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-stroke-primary p-4">
+        <div className="md:hidden border-t border-stroke-01 p-4 bg-surface-01">
           <nav className="flex flex-col space-y-4">
             {routes.map((route) => (
               <NavLink
@@ -109,8 +109,8 @@ export function MainNav() {
                 to={route.href}
                 className={({ isActive }) =>
                   cn(
-                    "text-sm font-medium transition-colors hover:text-interactive",
-                    isActive ? "text-interactive" : "text-text-secondary",
+                    "text-sm font-medium transition-colors hover:text-interactive-01",
+                    isActive ? "text-interactive-01" : "text-text-02",
                   )
                 }
                 onClick={() => setIsMobileMenuOpen(false)}

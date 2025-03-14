@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getSailpointConfig } from "@/lib/sailpoint";
+import { getContainerRadius } from "@/lib/utils";
 
 import type { Route } from "./+types/tasks";
 
@@ -94,33 +95,34 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Tasks</h1>
+        <h1 className="text-3xl font-display text-text-01">Tasks</h1>
         <Button
           variant="outline"
           size="sm"
           onClick={handleRefresh}
           disabled={isLoading}
+          className={getContainerRadius("xs")}
         >
           <RefreshCw
-            className={`mr-2 h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+            className={`mr-2 h-4 w-4 text-text-02 ${isLoading ? "animate-spin" : ""}`}
           />
           {isLoading ? "Refreshing..." : "Refresh"}
         </Button>
       </div>
 
-      <Card>
+      <Card className={`elevation-1 ${getContainerRadius("sm")}`}>
         <CardHeader>
-          <CardTitle>Task Filters</CardTitle>
+          <CardTitle className="text-text-01">Task Filters</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex items-center space-x-2">
-              <Search className="h-4 w-4 text-muted-foreground" />
+              <Search className="h-4 w-4 text-text-02" />
               <Input
                 placeholder="Search tasks..."
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
-                className="flex-1"
+                className={`flex-1 ${getContainerRadius("xs")}`}
               />
             </div>
 
@@ -130,10 +132,12 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
                 setStatusFilter(value === "_all" ? undefined : value)
               }
             >
-              <SelectTrigger>
+              <SelectTrigger className={getContainerRadius("xs")}>
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent
+                className={`elevation-2 ${getContainerRadius("sm")}`}
+              >
                 <SelectItem value="_all">All Statuses</SelectItem>
                 <SelectItem value="In Progress">IN PROGRESS</SelectItem>
                 {statuses.map((status) => (

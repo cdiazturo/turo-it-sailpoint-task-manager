@@ -37,32 +37,32 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+import { cn, getContainerRadius } from "@/lib/utils";
 
 const getStatusIcon = (status: string | null | undefined) => {
   if (!status) return <Loader2 className="h-4 w-4 animate-spin" />;
 
   switch (status.toLowerCase()) {
     case "success": {
-      return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+      return <CheckCircle2 className="h-4 w-4 text-interactive-success" />;
     }
     case "pending":
     case "in progress": {
-      return <Loader2 className="h-4 w-4 animate-spin text-yellow-500" />;
+      return <Loader2 className="h-4 w-4 animate-spin text-interactive-02" />;
     }
     case "error":
     case "failed": {
-      return <XCircle className="h-4 w-4 text-red-500" />;
+      return <XCircle className="h-4 w-4 text-interactive-destructive" />;
     }
     case "cancelled":
     case "terminated": {
-      return <X className="h-4 w-4 text-gray-500" />;
+      return <X className="h-4 w-4 text-text-02" />;
     }
     case "warning": {
-      return <Info className="h-4 w-4 text-orange-500" />;
+      return <Info className="h-4 w-4 text-interactive-02" />;
     }
     default: {
-      return <Info className="h-4 w-4 text-blue-500" />;
+      return <Info className="h-4 w-4 text-interactive-01" />;
     }
   }
 };
@@ -208,12 +208,12 @@ export function TaskList({
             <Card
               key={task.id}
               className={cn(
-                "transition-all hover:shadow",
+                `transition-all hover:elevation-1 ${getContainerRadius("sm")}`,
                 task.completionStatus?.toLowerCase() === "success" &&
-                  "border-green-200",
+                  "border-surface-success",
                 task.completionStatus?.toLowerCase() === "failed" &&
-                  "border-red-200",
-                !task.completionStatus && "border-yellow-200",
+                  "border-surface-error",
+                !task.completionStatus && "border-surface-02",
               )}
             >
               <CardHeader className="pb-2">
@@ -244,7 +244,12 @@ export function TaskList({
                   </div>
                   <div className="flex items-center space-x-2">
                     {onViewDetails && (
-                      <Button variant="ghost" size="sm" asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        asChild
+                        className={getContainerRadius("xs")}
+                      >
                         <Link to={`/tasks/${task.id}`}>View Details</Link>
                       </Button>
                     )}
@@ -252,6 +257,7 @@ export function TaskList({
                       variant="ghost"
                       size="sm"
                       onClick={() => toggleTaskExpanded(task.id)}
+                      className={getContainerRadius("xs")}
                     >
                       {expandedTasks[task.id] ? (
                         <ChevronUp className="h-4 w-4" />
@@ -281,7 +287,10 @@ export function TaskList({
                     task.completionStatus?.toLowerCase() === "failed") &&
                     task.messages &&
                     task.messages.length > 0 && (
-                      <Alert variant="destructive">
+                      <Alert
+                        variant="destructive"
+                        className={getContainerRadius("sm")}
+                      >
                         <XCircle className="h-4 w-4" />
                         <AlertTitle>Error</AlertTitle>
                         <AlertDescription>
@@ -312,7 +321,7 @@ export function TaskList({
                               )}
                             </span>
                           </TooltipTrigger>
-                          <TooltipContent>
+                          <TooltipContent className={getContainerRadius("xs")}>
                             {task.target?.type} - {task.target?.name || "N/A"}
                           </TooltipContent>
                         </Tooltip>
@@ -325,7 +334,7 @@ export function TaskList({
                           <TooltipTrigger asChild>
                             <span>{formatDate(task.created)}</span>
                           </TooltipTrigger>
-                          <TooltipContent>
+                          <TooltipContent className={getContainerRadius("xs")}>
                             Created:{" "}
                             {new Date(task.created || "").toLocaleString()}
                           </TooltipContent>
@@ -339,7 +348,7 @@ export function TaskList({
                           <TooltipTrigger asChild>
                             <span>{duration}</span>
                           </TooltipTrigger>
-                          <TooltipContent>
+                          <TooltipContent className={getContainerRadius("xs")}>
                             {task.launched && (
                               <div>
                                 Started:{" "}

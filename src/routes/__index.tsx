@@ -37,9 +37,15 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   const tenant = loaderData.data;
   return (
     <div className="container mx-auto py-6 space-y-6">
-      <h1 className="text-3xl font-bold mb-6">SailPoint Task Manager</h1>
+      <h1 className="text-3xl font-display text-text-01 mb-6">
+        SailPoint Task Manager
+      </h1>
       <div className="space-y-4">
-        <Suspense fallback={<div>Loading tenant information...</div>}>
+        <Suspense
+          fallback={
+            <div className="text-text-02">Loading tenant information...</div>
+          }
+        >
           <TenantInfo tenantInfo={tenant} />
         </Suspense>
       </div>
